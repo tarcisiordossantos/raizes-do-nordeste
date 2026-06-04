@@ -48,13 +48,15 @@ public class Unidade {
     @JoinColumn(name = "regiao_id")
     private RegiaoComercial regiao;
 
-    @OneToMany(mappedBy = "unidade")
+    @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cardapio> cardapios  = new ArrayList<>();
 
-    @OneToMany(mappedBy = "unidade")
+    @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EstoqueProduto> estoquesProdutos  = new ArrayList<>();
 
-    @OneToMany(mappedBy = "unidade")
+    @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EstoqueIngrediente> estoquesIngredientes  = new ArrayList<>();
-    
+
+    @OneToMany(mappedBy = "unidade")
+    private List<Pedido> pedidos = new ArrayList<>();
 }

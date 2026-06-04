@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,6 +50,9 @@ public class Produto {
     @OneToMany(mappedBy = "produto")
     private List<ProdutoCardapio> produtosCardapio  = new ArrayList<>();
     
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IngredienteProduto> ingredientesProduto = new ArrayList<>();
+
     @OneToMany(mappedBy = "produto")
-    private List<IngredienteProduto> ingredientes = new ArrayList<>();
+    private List<EstoqueProduto> estoquesProdutos = new ArrayList<>();
 }

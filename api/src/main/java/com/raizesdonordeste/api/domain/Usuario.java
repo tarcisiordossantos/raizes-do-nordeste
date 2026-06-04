@@ -69,6 +69,9 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private List<ConsentimentoLgpd> consentimentos  = new ArrayList<>();
 
+    @OneToMany(mappedBy = "usuario")
+    private List<Pedido> pedidos = new ArrayList<>();
+
     public void alterarInformacoes(String nome, String email, String telefone) {
         this.nome = nome;
         this.email = email;

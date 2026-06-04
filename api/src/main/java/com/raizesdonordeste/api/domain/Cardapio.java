@@ -3,6 +3,7 @@ package com.raizesdonordeste.api.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,7 +41,7 @@ public class Cardapio {
     @JoinColumn(name = "unidade_id")
     private Unidade unidade;
 
-    @OneToMany(mappedBy = "cardapio")
+    @OneToMany(mappedBy = "cardapio", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProdutoCardapio> produtosCardapio = new ArrayList<>();
 
     public void adicionarProduto(ProdutoCardapio produtoCardapio) {

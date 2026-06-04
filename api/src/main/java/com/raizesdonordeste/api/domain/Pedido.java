@@ -1,0 +1,106 @@
+package com.raizesdonordeste.api.domain;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "pedido")
+public class Pedido {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
+    private LocalDateTime dataPedido;
+    @Column
+    @Size(max = 50)
+    private String statusPedido;
+    @Column
+    @Size(max = 50)
+    private String canalOrigem;
+    @Column
+    @Size(max = 50)
+    private String formaEntrega;
+    @Column
+    @PositiveOrZero
+    private BigDecimal valorEntrega;
+    @Column
+    @PositiveOrZero
+    private int prazoEstimado;
+    @Column
+    @PositiveOrZero
+    private BigDecimal desconto;
+    @Column
+    @PositiveOrZero
+    private BigDecimal valorTotal;
+    @Column
+    @Size(max = 255)
+    private String observacoes;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+    
+    @ManyToOne
+    @JoinColumn(name = "unidade_id")
+    private Unidade unidade;
+
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedido> itensPedido = new ArrayList<>();
+
+    @OneToMany(mappedBy = "pedido")
+    private List<Pagamento> pagamentos = new ArrayList<>();
+
+    public void adicionarItem(ItemPedido item) {
+        itensPedido.add(item);
+        item.setPedido(this);
+    }
+
+    public void removerItem(ItemPedido item) {
+        itensPedido.remove(item);
+        item.setPedido(null);
+    }
+
+    public BigDecimal calcularValorTotal() {
+        BigDecimal subtotal = BigDecimal.ZERO;
+        BigDecimal entrega = (this.valorEntrega != null) ? this.valorEntrega : BigDecimal.ZERO;
+        BigDecimal desc = (this.desconto != null) ? this.desconto : BigDecimal.ZERO;
+
+        for(ItemPedido item : itensPedido){
+            subtotal = subtotal.add(item.calcularSubtotal()); 
+        }
+        this.valorTotal = subtotal.add(entrega).subtract(desc);
+        return valorTotal;
+    }
+
+    public void calcularPrazoEntrega() {
+        //A implementar
+    }
+
+    public void cancelar() {
+        //A implementar
+    }
+
+    public void concluir() {
+        //A implementar
+    }
+}

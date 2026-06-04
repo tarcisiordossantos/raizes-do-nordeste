@@ -64,7 +64,7 @@
         -Produto produto
         -Pedido pedido
 
-        +calcularSubtotal()
+        +BigDecimal calcularSubtotal()
     }
     class Produto{
         -Long id 
@@ -82,7 +82,7 @@
     }
     class IngredienteProduto{
         -Long id
-        -BigDecimal quantidade
+        -double quantidade
         -Ingrediente ingrediente
         -Produto produto
     }
@@ -112,20 +112,20 @@
         -Unidade unidade
         -Produto produto
 
-        +baixarEstoque()
+        +String baixarEstoque()
         +recarregarEstoque()
-        +abaixoDoMinimo()
+        +String abaixoDoMinimo()
     }
     class EstoqueIngrediente{
         -Long id
-        -BigDecimal quantidadeAtual
-        -BigDecimal quantidadeMinima
+        -double quantidadeAtual
+        -double quantidadeMinima
         -Unidade unidade
         -Ingrediente ingrediente
 
-        +baixarEstoque()
+        +String baixarEstoque()
         +recarregarEstoque()
-        +abaixoDoMinimo()
+        +String abaixoDoMinimo()
     }
     class Cardapio{
         -Long id
