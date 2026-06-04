@@ -1,6 +1,6 @@
 @startuml RaizesDoNordeste
     class Usuario{
-        -int id
+        -Long id
         -String cpf
         -String nome
         -LocalDate dataNascimento
@@ -12,17 +12,19 @@
         -Perfil[] perfis
         -Endereco[] enderecos
         -ConsentimentoLgpd[] consentimentos
+        -Pedido[] pedidos
 
         +alterarInformacoes()
         +alterarSenha()
     }
     class Perfil{
-        -int id
+        -Long id
         -String nome
         -String descricao
+        -Usuario[] usuarios
     }
     class Pedido{
-        -int id
+        -Long id
         -LocalDateTime dataPedido
         -String statusPedido
         -String canalOrigem
@@ -45,45 +47,54 @@
         +concluir()
     }
     class Pagamento{
-        -int id
+        -Long id
         -String metodoPagamento
         -String statusPagamento
         -BigDecimal valor
         -LocalDateTime dataPagamento
+        -Pedido pedido
 
         +validarPagamento()
     }
     class ItemPedido{
-        -int id
-        -Produto produto
+        -Long id
         -int quantidade
         -BigDecimal subtotal
         -String statusProduto
+        -Produto produto
+        -Pedido pedido
 
         +calcularSubtotal()
     }
     class Produto{
-        -int id 
+        -Long id 
         -String nome
         -String descricao
         -String categoria
         -BigDecimal precoBase
         -boolean exigePreparo
         -boolean ativo
-        -IngredienteProduto[] ingredientes
+        -IngredienteProduto[] ingredientesProduto
+        -EstoqueProduto[] estoquesProdutos
+        -ProdutoCardapio[] produtosCardapio
+        -ItemPedido[] itensPedido
+
     }
     class IngredienteProduto{
-        -int id
+        -Long id
         -BigDecimal quantidade
         -Ingrediente ingrediente
+        -Produto produto
     }
     class Ingrediente{
-        -int id
+        -Long id
         -String nome
         -String unidadeMedida
+        -IngredienteProduto[] ingredientesProduto
+        -EstoqueIngrediente[] estoquesIngredientes
     }
     class Unidade{
-        -int id
+        -Long id
         -String nome
         -String cnpj
         -String telefone
@@ -92,11 +103,13 @@
         -EstoqueProduto[] estoquesProdutos
         -EstoqueIngrediente[] estoquesIngredientes
         -Cardapio[] cardapios
+        -Pedido[] pedidos
     }
     class EstoqueProduto{
-        -int id
+        -Long id
         -int quantidadeAtual
         -int quantidadeMinima
+        -Unidade unidade
         -Produto produto
 
         +baixarEstoque()
@@ -104,9 +117,10 @@
         +abaixoDoMinimo()
     }
     class EstoqueIngrediente{
-        -int id
+        -Long id
         -BigDecimal quantidadeAtual
         -BigDecimal quantidadeMinima
+        -Unidade unidade
         -Ingrediente ingrediente
 
         +baixarEstoque()
@@ -114,29 +128,32 @@
         +abaixoDoMinimo()
     }
     class Cardapio{
-        -int id
+        -Long id
         -String nome
         -String descricao
         -boolean ativo
+        -Unidade unidade
         -ProdutoCardapio[] produtosCardapio
 
         +adicionarProduto()
         +retirarProduto()
     }
     class ProdutoCardapio{
-        -int id
+        -Long id
         -boolean disponivel
+        -Cardapio cardapio
         -Produto produto
     }
     class ConsentimentoLgpd{
-        -int id
+        -Long id
         -boolean aceito
         -LocalDateTime dataAceite
+        -Usuario usuario
         
         +fornecerConsentimento()
     }
     class Endereco{
-        -int id
+        -Long id
         -String cep
         -String logradouro
         -String numero
@@ -145,12 +162,15 @@
         -String cidade
         -String estado
         -boolean principal
+        -Usuario usuario
+        -Unidade unidade
 
         +alterarEndereco()
     }
     class RegiaoComercial{
-        -int id
+        -Long id
         -String nome
+        -Unidade[] unidades
     }
 
     Usuario "0..*" -- "1..*" Perfil : possui
@@ -160,8 +180,8 @@
     Unidade "1" -- "0..*" Pedido : atende
     Unidade "1" *-- "0..*" EstoqueProduto : possui
     Unidade "1" *-- "0..*" EstoqueIngrediente : possui
-    EstoqueProduto "1" -- "1" Produto : contem
-    EstoqueIngrediente "1" -- "1" Ingrediente : contem
+    EstoqueProduto "0..*" -- "1" Produto : contem
+    EstoqueIngrediente "0..*" -- "1" Ingrediente : contem
     Pedido "1" *-- "1..*" ItemPedido : possui
     Pedido "1" -- "0..*" Pagamento : tem
     ItemPedido "0..*" -- "1" Produto : contem
