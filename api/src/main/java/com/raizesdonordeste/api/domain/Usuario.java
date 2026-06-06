@@ -49,7 +49,7 @@ public class Usuario {
     private String telefone;
     @Column(nullable = false)
     @NotBlank
-    @Size(max = 255)
+    @Size(min = 6, max = 255)
     private String senha;
     @Column
     @Size(max = 30)
