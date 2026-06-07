@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,22 +23,26 @@ public class ConsentimentoLgpd {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false, name = "tipo_consentimento")
+    @NotBlank
+    private String tipoConsentimento;
+    @Column(name = "versao_consentimento")
+    private String versaoConsentimento;
     @Column(nullable = false)
     @NotNull
     private boolean aceito;
-    @Column(name = "data_aceite")
-    private LocalDateTime dataAceite;
+    @Column(name = "data_acao")
+    private LocalDateTime dataAcao;
+    @Column
+    private String observacoes;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public void fornecerConsentimento(boolean aceito) {
+    public void fornecerConsentimento(String tipoConsentimento, boolean aceito) {
+        this.tipoConsentimento = tipoConsentimento;
         this.aceito = aceito;
-        if (this.aceito){
-            this.dataAceite = LocalDateTime.now();
-        } else {
-            this.dataAceite = null;
-        }
+        this.dataAcao = LocalDateTime.now();
     }
 }
