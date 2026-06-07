@@ -39,7 +39,7 @@ public class Pagamento {
     @JoinColumn(name = "pedido_id")
     private Pedido pedido;
 
-    public void validarPagamento() {
-        //A implementar (Mock)
+    public boolean validarPagamento() {
+        return true;
     }
 }

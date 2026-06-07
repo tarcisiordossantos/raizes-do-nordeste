@@ -3,7 +3,6 @@ package com.raizesdonordeste.api.dto;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.raizesdonordeste.api.domain.Perfil;
 import com.raizesdonordeste.api.domain.Usuario;
 
 public record UsuarioResponseDTO(

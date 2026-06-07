@@ -20,6 +20,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
+    //private final BCryptPasswordEncoder codificador = new BCryptPasswordEncoder();
 
     UsuarioService(UsuarioRepository usuarioRepository, PerfilRepository perfilRepository) {
         this.usuarioRepository = usuarioRepository;
@@ -42,6 +43,11 @@ public class UsuarioService {
         // Converter o DTO em uma Entidade Usuario
         Usuario novoUsuario = dto.toEntity();
 
+
+        //Criptografar a senha com BCrypt
+        //String senhaCriptografada = codificador.encode(novoUsuario.getSenha());
+        //novoUsuario.setSenha(senhaCriptografada);
+
         // Usuario deve receber inicialmente o Perfil "CLIENTE"
         Perfil perfilCliente = perfilRepository.findByNome("CLIENTE")
         .orElseThrow(() -> new EntityNotFoundException("Perfil CLIENTE não localizado no banco de dados."));
@@ -53,8 +59,6 @@ public class UsuarioService {
         consentimento.fornecerConsentimento("TERMOS DE USO E PRIVACIDADE", dto.termoPrivacidade());
         consentimento.setUsuario(novoUsuario);
         novoUsuario.getConsentimentos().add(consentimento);
-
-        // Falta criptografia de Senha
 
         usuarioRepository.save(novoUsuario);
         return UsuarioResponseDTO.fromEntity(novoUsuario);

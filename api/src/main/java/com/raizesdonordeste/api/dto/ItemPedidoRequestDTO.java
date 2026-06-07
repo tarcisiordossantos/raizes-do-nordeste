@@ -1,5 +1,8 @@
 package com.raizesdonordeste.api.dto;
 
+import com.raizesdonordeste.api.domain.ItemPedido;
+import com.raizesdonordeste.api.domain.Produto;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
@@ -7,5 +10,12 @@ public record ItemPedidoRequestDTO(
     @Min(value = 1) int quantidade,
     @NotNull Long produtoId
 ) {
-
+    public ItemPedido toEntity(Produto produto){
+            ItemPedido item = new ItemPedido();
+            item.setQuantidade(this.quantidade);
+            item.setProduto(produto);
+            item.setSubtotal(item.calcularSubtotal());
+            return item;
+    }
 }
+
