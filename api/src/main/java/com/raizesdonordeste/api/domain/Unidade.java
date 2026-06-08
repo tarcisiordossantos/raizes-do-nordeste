@@ -3,6 +3,9 @@ package com.raizesdonordeste.api.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,21 +45,27 @@ public class Unidade {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "endereco_id")
+    @JsonIgnoreProperties({"usuario","unidade"})
     private Endereco endereco;
 
     @ManyToOne
     @JoinColumn(name = "regiao_id")
+    @JsonIgnoreProperties("unidades")
     private RegiaoComercial regiao;
 
     @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("unidade")
     private List<Cardapio> cardapios  = new ArrayList<>();
 
     @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<EstoqueProduto> estoquesProdutos  = new ArrayList<>();
 
     @OneToMany(mappedBy = "unidade", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<EstoqueIngrediente> estoquesIngredientes  = new ArrayList<>();
 
     @OneToMany(mappedBy = "unidade")
+    @JsonIgnoreProperties({"unidade","usuario"})
     private List<Pedido> pedidos = new ArrayList<>();
 }

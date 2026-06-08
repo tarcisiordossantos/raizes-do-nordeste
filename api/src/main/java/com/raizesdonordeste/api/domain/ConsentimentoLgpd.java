@@ -2,6 +2,8 @@ package com.raizesdonordeste.api.domain;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,6 +40,7 @@ public class ConsentimentoLgpd {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference
     private Usuario usuario;
 
     public void fornecerConsentimento(String tipoConsentimento, boolean aceito) {

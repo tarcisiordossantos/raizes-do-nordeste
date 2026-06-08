@@ -26,7 +26,7 @@ public record UsuarioRequestDTO(
     @Valid EnderecoRequestDTO endereco,
     @NotNull(message = "É necessário aceitar os Termos de Uso e Privacidade") 
     @AssertTrue(message = "É necessário aceitar os Termos de Uso e Privacidade")
-    boolean termoPrivacidade
+    Boolean termoPrivacidade
 ) {
     public Usuario toEntity(){
         Usuario usuario = new Usuario();

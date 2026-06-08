@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,16 +61,20 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnoreProperties({"pedidos","perfis","enderecos","consentimentos"})
     private Usuario usuario;
     
     @ManyToOne
     @JoinColumn(name = "unidade_id")
+    @JsonIgnoreProperties({"pedidos","endereco","regiao","cardapios","estoquesProdutos","estoquesIngredientes"})
     private Unidade unidade;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ItemPedido> itensPedido = new ArrayList<>();
 
-    @OneToMany(mappedBy = "pedido")
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Pagamento> pagamentos = new ArrayList<>();
 
     public void adicionarItem(ItemPedido item) {

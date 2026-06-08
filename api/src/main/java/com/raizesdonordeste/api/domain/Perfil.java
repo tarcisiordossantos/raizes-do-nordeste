@@ -3,6 +3,8 @@ package com.raizesdonordeste.api.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,5 +35,6 @@ public class Perfil {
     private String descricao;
 
     @ManyToMany(mappedBy = "perfis")
+    @JsonIgnoreProperties("perfis")
     private List<Usuario> usuarios  = new ArrayList<>();
 }

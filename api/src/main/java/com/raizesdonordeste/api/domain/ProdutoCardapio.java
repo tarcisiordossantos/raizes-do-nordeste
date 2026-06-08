@@ -1,5 +1,8 @@
 package com.raizesdonordeste.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,9 +28,11 @@ public class ProdutoCardapio {
 
     @ManyToOne
     @JoinColumn(name = "cardapio_id")
+    @JsonBackReference
     private Cardapio cardapio;
 
     @ManyToOne
     @JoinColumn(name = "produto_id")
+    @JsonIgnoreProperties({"produtosCardapio","itensPedido","ingredientesProduto","estoquesProdutos"})
     private Produto produto;
 }

@@ -3,6 +3,8 @@ package com.raizesdonordeste.api.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,8 +35,10 @@ public class Ingrediente {
     private String unidadeMedida;
 
     @OneToMany(mappedBy = "ingrediente")
+    @JsonIgnore
     private List<EstoqueIngrediente> estoquesIngredientes = new ArrayList<>();
 
     @OneToMany(mappedBy = "ingrediente")
+    @JsonIgnore
     private List<IngredienteProduto> ingredientesProduto = new ArrayList<>();
 }

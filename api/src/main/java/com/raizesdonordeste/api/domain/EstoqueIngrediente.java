@@ -1,5 +1,7 @@
 package com.raizesdonordeste.api.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.raizesdonordeste.api.exception.EstoqueInsuficienteException;
 
 import jakarta.persistence.Column;
@@ -32,10 +34,12 @@ public class EstoqueIngrediente {
 
     @ManyToOne
     @JoinColumn(name = "ingrediente_id")
+    @JsonIgnoreProperties({"estoquesIngredientes","ingredientesProduto"})
     private Ingrediente ingrediente;
 
     @ManyToOne
     @JoinColumn(name = "unidade_id")
+    @JsonBackReference
     private Unidade unidade;
 
     public void baixarEstoque(double qtd) {

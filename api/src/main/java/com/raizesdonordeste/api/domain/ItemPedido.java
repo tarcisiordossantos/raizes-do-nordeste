@@ -2,6 +2,9 @@ package com.raizesdonordeste.api.domain;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,10 +38,12 @@ public class ItemPedido {
 
     @ManyToOne
     @JoinColumn(name = "produto_id")
+    @JsonIgnoreProperties({"itensPedido","produtosCardapio","ingredientesProduto","estoquesProdutos"})
     private Produto produto;
 
     @ManyToOne
     @JoinColumn(name = "pedido_id")
+    @JsonBackReference
     private Pedido pedido;
 
     public BigDecimal calcularSubtotal() {

@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,11 +51,18 @@ public class Produto {
     private boolean ativo;
 
     @OneToMany(mappedBy = "produto")
+    @JsonIgnore
+    private List<ItemPedido> itensPedido = new ArrayList<>();
+
+    @OneToMany(mappedBy = "produto")
+    @JsonIgnore
     private List<ProdutoCardapio> produtosCardapio  = new ArrayList<>();
     
     @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<IngredienteProduto> ingredientesProduto = new ArrayList<>();
 
     @OneToMany(mappedBy = "produto")
+    @JsonIgnore
     private List<EstoqueProduto> estoquesProdutos = new ArrayList<>();
 }

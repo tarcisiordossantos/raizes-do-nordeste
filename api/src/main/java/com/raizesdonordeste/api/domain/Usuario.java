@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,6 +31,8 @@ import lombok.Setter;
 @Entity
 @Table(name="usuario")
 public class Usuario {
+    //private final BCryptPasswordEncoder codificador = new BCryptPasswordEncoder();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -51,6 +58,7 @@ public class Usuario {
     @Column(nullable = false)
     @NotBlank
     @Size(min = 6, max = 255)
+    @JsonIgnore
     private String senha;
     @Column
     @Size(max = 30)
@@ -62,24 +70,41 @@ public class Usuario {
     @JoinTable(name = "perfil_usuario", 
     joinColumns = @JoinColumn(name = "usuario_id"),
     inverseJoinColumns = @JoinColumn(name = "perfil_id"))
+    @JsonIgnoreProperties("usuarios")
     private List<Perfil> perfis  = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"usuario","unidade"})
     private List<Endereco> enderecos  = new ArrayList<>();
 
-    @OneToMany(mappedBy = "usuario")
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<ConsentimentoLgpd> consentimentos  = new ArrayList<>();
 
     @OneToMany(mappedBy = "usuario")
+    @JsonIgnoreProperties({"usuario","unidade"})
     private List<Pedido> pedidos = new ArrayList<>();
 
-    public void alterarInformacoes(String nome, String email, String telefone) {
-        this.nome = nome;
-        this.email = email;
-        this.telefone = telefone;
-    }
-
-    public void alterarSenha(String senha) {
-        this.senha = senha;
+    public void alterarInformacoes(UsuarioUpdateDTO dto) {
+        if(dto.nome() != null){
+            this.setNome(dto.nome());
+        }
+        if(dto.dataNascimento() != null){
+            this.setDataNascimento(dto.dataNascimento());
+        }
+        if(dto.email() != null){
+            
+            this.setEmail(dto.email());
+        }
+        if(dto.telefone() != null){
+            this.setTelefone(dto.telefone());
+        }
+        if(dto.genero() != null){
+            this.setGenero(dto.genero());
+        }
+        if(dto.senha() != null){
+            //String senhaCriptografada = codificador.encode(dto.senha());
+            this.setSenha(dto.senha());
+        }
     }
 }
