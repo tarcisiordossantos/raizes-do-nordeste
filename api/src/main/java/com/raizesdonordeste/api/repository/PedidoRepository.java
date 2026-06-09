@@ -13,5 +13,6 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByDataPedidoBetween(LocalDateTime dataInicial, LocalDateTime dataFinal);
     List<Pedido> findByCanalOrigem(String canalOrigem);
     List<Pedido> findByUsuarioId(Long usuarioId);
+    List<Pedido> findByUnidadeId(Long unidadeId);
     List<Pedido> findByUnidadeIdAndStatusPedido(Long unidadeId, String statusPedido);
 }

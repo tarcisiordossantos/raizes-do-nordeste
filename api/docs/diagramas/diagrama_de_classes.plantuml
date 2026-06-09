@@ -15,7 +15,6 @@
         -Pedido[] pedidos
 
         +alterarInformacoes()
-        +alterarSenha()
     }
     class Perfil{
         -Long id

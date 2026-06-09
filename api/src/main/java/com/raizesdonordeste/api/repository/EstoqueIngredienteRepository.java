@@ -13,4 +13,6 @@ public interface EstoqueIngredienteRepository extends JpaRepository<EstoqueIngre
     
     @Query("SELECT e FROM EstoqueIngrediente e WHERE e.unidade.id = :unidadeId AND e.quantidadeAtual < e.quantidadeMinima")
     List<EstoqueIngrediente> findAbaixoDoMinimoPorUnidade(Long unidadeId);
+
+    List<EstoqueIngrediente> findByUnidadeId(Long unidadeId);
 }

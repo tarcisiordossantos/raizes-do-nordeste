@@ -2,7 +2,7 @@ package com.raizesdonordeste.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.raizesdonordeste.api.exception.EstoqueInsuficienteException;
+import com.raizesdonordeste.api.exception.ProdutoIndisponivelException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,7 +44,7 @@ public class EstoqueIngrediente {
 
     public void baixarEstoque(double qtd) {
         if (qtd > this.quantidadeAtual){
-            throw new EstoqueInsuficienteException(
+            throw new ProdutoIndisponivelException(
                 "Estoque insuficiente. Estoque disponível na Unidade: " + this.quantidadeAtual
             );
         } else {
