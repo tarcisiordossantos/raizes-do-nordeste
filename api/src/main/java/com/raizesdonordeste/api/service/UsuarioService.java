@@ -5,11 +5,11 @@ import com.raizesdonordeste.api.repository.UnidadeRepository;
 import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.raizesdonordeste.api.domain.ConsentimentoLgpd;
 import com.raizesdonordeste.api.domain.Perfil;
@@ -20,6 +20,7 @@ import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
 import com.raizesdonordeste.api.exception.CadastroDuplicadoException;
 
 @Service
+@Transactional(readOnly = true)
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;

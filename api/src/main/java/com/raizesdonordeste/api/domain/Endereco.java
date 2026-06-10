@@ -1,5 +1,7 @@
 package com.raizesdonordeste.api.domain;
 
+import com.raizesdonordeste.api.dto.EnderecoRequestDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -55,14 +57,13 @@ public class Endereco {
     @OneToOne(mappedBy = "endereco")
     private Unidade unidade;
 
-    public void alterarEndereco(String cep, String logradouro, String numero,
-        String complemento, String bairro, String cidade, String estado) {
-            this.cep = cep;
-            this.logradouro = logradouro;
-            this.numero = numero;
-            this.complemento = complemento;
-            this.bairro = bairro;
-            this.cidade = cidade;
-            this.estado = estado;
+    public void alterarEndereco(EnderecoRequestDTO dto) {
+            this.cep = dto.cep();
+            this.logradouro = dto.logradouro();
+            this.numero = dto.numero();
+            this.complemento = dto.complemento();
+            this.bairro = dto.bairro();
+            this.cidade = dto.cidade();
+            this.estado = dto.estado();
     }
 }
