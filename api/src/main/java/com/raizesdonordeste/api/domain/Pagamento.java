@@ -42,7 +42,9 @@ public class Pagamento {
     @JsonBackReference
     private Pedido pedido;
 
-    public boolean validarPagamento() {
-        return true;
+    public void registrarPagamento() {
+        this.statusPagamento = "PAGAMENTO_CONFIRMADO";
+        this.valor = this.pedido.getValorTotal();
+        dataPagamento = LocalDateTime.now();
     }
 }

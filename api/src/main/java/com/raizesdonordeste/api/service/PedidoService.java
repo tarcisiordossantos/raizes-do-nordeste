@@ -13,6 +13,7 @@ import com.raizesdonordeste.api.domain.Usuario;
 import com.raizesdonordeste.api.dto.PedidoRequestDTO;
 import com.raizesdonordeste.api.dto.PedidoResponseDTO;
 import com.raizesdonordeste.api.exception.FalhaNoPagamentoException;
+import com.raizesdonordeste.api.gateway.PagamentoGateway;
 import com.raizesdonordeste.api.repository.PedidoRepository;
 import com.raizesdonordeste.api.repository.ProdutoRepository;
 import com.raizesdonordeste.api.repository.UnidadeRepository;
@@ -29,9 +30,10 @@ public class PedidoService {
     private final UsuarioRepository usuarioRepository;
     private final EstoquesService estoquesService;
     private final CardapioService cardapioService;
+    private final PagamentoGateway pagamentoGateway;
 
 
-    PedidoService(PedidoRepository pedidoRepository, ProdutoRepository produtoRepository, UnidadeRepository unidadeRepository, UsuarioRepository usuarioRepository, EstoquesService estoquesService, CardapioService cardapioService)
+    PedidoService(PedidoRepository pedidoRepository, ProdutoRepository produtoRepository, UnidadeRepository unidadeRepository, UsuarioRepository usuarioRepository, EstoquesService estoquesService, CardapioService cardapioService, PagamentoGateway pagamentoGateway)
     {
         this.pedidoRepository = pedidoRepository;
         this.produtoRepository = produtoRepository;
@@ -39,6 +41,7 @@ public class PedidoService {
         this.usuarioRepository = usuarioRepository;
         this.estoquesService = estoquesService;
         this.cardapioService = cardapioService;
+        this.pagamentoGateway = pagamentoGateway;
     }
 
     @Transactional
@@ -77,11 +80,13 @@ public class PedidoService {
         
         //8. Cria a entidade Pedido para ser salva no Banco de Dados
         Pedido novoPedido = dto.toEntity(usuario, unidade, itens);
-
+        
         //9. Confirmação do pagamento (mock)
-        boolean confirmacaoPagamento = novoPedido.getPagamentos().getFirst().validarPagamento();
+        boolean confirmacaoPagamento = pagamentoGateway.validarPagamento(novoPedido);
         if (!confirmacaoPagamento){
             throw new FalhaNoPagamentoException("Houve uma falha na tentativa de pagamento");
+        } else {
+            novoPedido.getPagamentos().getFirst().registrarPagamento();
         }
 
         //10. Dar baixa nos estoques da Unidade

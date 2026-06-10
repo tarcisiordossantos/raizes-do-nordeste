@@ -25,6 +25,9 @@ public record PedidoResponseDTO(
       public static PedidoResponseDTO fromEntity(Pedido entidade){
         List<ItemPedidoResponseDTO> itens = entidade.getItensPedido().stream()
         .map(item -> ItemPedidoResponseDTO.fromEntity(item)).toList();
+    
+        List<PagamentoResponseDTO> pagamentos = entidade.getPagamentos().stream()
+        .map(p -> PagamentoResponseDTO.fromEntity(p)).toList();
 
         return new PedidoResponseDTO(
             entidade.getId(), 
@@ -40,6 +43,6 @@ public record PedidoResponseDTO(
             entidade.getUsuario().getId(), 
             entidade.getUnidade().getId(), 
             itens, 
-            null);
+            pagamentos);
       }
 }

@@ -2,8 +2,10 @@ package com.raizesdonordeste.api.dto;
 
 import com.raizesdonordeste.api.domain.Pagamento;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record PagamentoRequestDTO(
-    String metodoPagamento
+    @NotBlank String metodoPagamento
 ) {
     public Pagamento toEntity(){
         Pagamento p = new Pagamento();
