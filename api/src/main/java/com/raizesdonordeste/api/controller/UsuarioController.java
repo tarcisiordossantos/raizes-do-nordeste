@@ -8,6 +8,8 @@ import com.raizesdonordeste.api.dto.UsuarioResponseDTO;
 import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
 import com.raizesdonordeste.api.service.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/usuarios")
+@Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários")
 public class UsuarioController {
     private final UsuarioService usuarioService;
 
@@ -31,30 +34,37 @@ public class UsuarioController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar novo usuário com o perfil inicial CLIENTE")
     public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDTO dto) {
         UsuarioResponseDTO usuario = usuarioService.cadastrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Consultar usuário por seu ID")
     public ResponseEntity<UsuarioResponseDTO> consultarPorId(@PathVariable Long id) {
         UsuarioResponseDTO usuario = usuarioService.consultarPorId(id);
         return ResponseEntity.ok(usuario);
     }
 
     @GetMapping
+    @Operation(summary = "Listar todos usuários cadastrados")
     public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         List<UsuarioResponseDTO> usuarios = usuarioService.listarTodos();
         return ResponseEntity.ok(usuarios);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Deletar usuário por seu ID")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletarPorId(id);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}")
+    @Operation(
+        summary = "Atualizar cadastro usuário por seu ID",
+        description = "Não é possivel alterar o CPF do usuário e alterações de endereço devem ser feitas em rotas próprias")
     public ResponseEntity<UsuarioResponseDTO> atualizarCadastro(@PathVariable Long id, @Valid @RequestBody UsuarioUpdateDTO dto) {
         UsuarioResponseDTO usuario = usuarioService.atualizarCadastro(id, dto);
         return ResponseEntity.ok(usuario);

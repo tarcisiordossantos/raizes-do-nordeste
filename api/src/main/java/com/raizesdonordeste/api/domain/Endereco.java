@@ -65,5 +65,6 @@ public class Endereco {
             this.bairro = dto.bairro();
             this.cidade = dto.cidade();
             this.estado = dto.estado();
+            this.principal = dto.principal();
     }
 }

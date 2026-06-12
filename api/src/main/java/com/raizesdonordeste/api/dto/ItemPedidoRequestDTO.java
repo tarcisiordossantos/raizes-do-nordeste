@@ -7,8 +7,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record ItemPedidoRequestDTO(
-    @Min(value = 1) int quantidade,
-    @NotNull Long produtoId
+    @Min(value = 1) 
+    int quantidade,
+    @NotNull(message = "campo de preenchimento obrigatório") 
+    Long produtoId
 ) {
     public ItemPedido toEntity(Produto produto){
             ItemPedido item = new ItemPedido();

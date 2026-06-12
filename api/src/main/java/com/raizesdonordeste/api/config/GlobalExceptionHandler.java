@@ -1,13 +1,17 @@
 package com.raizesdonordeste.api.config;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.raizesdonordeste.api.dto.ErroResponseDTO;
+import com.raizesdonordeste.api.dto.ErroValidacaoCampoDTO;
 import com.raizesdonordeste.api.exception.CadastroDuplicadoException;
 import com.raizesdonordeste.api.exception.FalhaNoPagamentoException;
 import com.raizesdonordeste.api.exception.ProdutoIndisponivelException;
@@ -77,6 +81,16 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(erro);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<List<ErroValidacaoCampoDTO>> tratarErroValidacao(MethodArgumentNotValidException ex){
+        List<FieldError> erros = ex.getBindingResult().getFieldErrors();
+        List<ErroValidacaoCampoDTO> respostas = erros.stream()
+            .map(e -> new ErroValidacaoCampoDTO(e.getField(), e.getDefaultMessage()))
+            .toList();
+
+        return ResponseEntity.badRequest().body(respostas);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

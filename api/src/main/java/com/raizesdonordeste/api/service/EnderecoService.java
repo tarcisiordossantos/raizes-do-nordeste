@@ -34,6 +34,7 @@ public class EnderecoService {
         usuario.getEnderecos().add(endereco);
         endereco.setUsuario(usuario);
 
+        enderecoRepository.save(endereco);
         return EnderecoResponseDTO.fromEntity(endereco);
     }
 
@@ -52,7 +53,7 @@ public class EnderecoService {
         Endereco endereco = enderecoRepository.findById(enderecoId)
         .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado endereço com ID "+ enderecoId));
 
-        if(!endereco.getUsuario().getId().equals(usuarioId)){
+        if(endereco.getUsuario() == null || !endereco.getUsuario().getId().equals(usuarioId)){
             throw new IllegalArgumentException("O endereço não pertece ao usuário informado.");
         }
 
@@ -67,7 +68,7 @@ public class EnderecoService {
         Endereco endereco = enderecoRepository.findById(enderecoId)
         .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado endereço com ID "+ enderecoId));
 
-        if(!endereco.getUsuario().getId().equals(usuarioId)){
+        if(endereco.getUsuario() == null || !endereco.getUsuario().getId().equals(usuarioId)){
             throw new IllegalArgumentException("O endereço não pertece ao usuário informado.");
         }
 

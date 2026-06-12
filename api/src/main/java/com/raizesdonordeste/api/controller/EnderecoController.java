@@ -17,10 +17,13 @@ import com.raizesdonordeste.api.dto.EnderecoRequestDTO;
 import com.raizesdonordeste.api.dto.EnderecoResponseDTO;
 import com.raizesdonordeste.api.service.EnderecoService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/usuarios/{usuarioId}/enderecos")
+@Tag(name = "Endereços", description = "Endpoints para gerenciamento dos endereços dos usuários")
 public class EnderecoController {
     private final EnderecoService enderecoService;
 
@@ -29,18 +32,21 @@ public class EnderecoController {
     }
 
     @PostMapping
+    @Operation(summary = "Cadastrar novo endereço para o usuário")
     public ResponseEntity<EnderecoResponseDTO> cadastrarEndereco(@Valid @RequestBody EnderecoRequestDTO dto, @PathVariable Long usuarioId) {
         EnderecoResponseDTO endereco = enderecoService.cadastrar(dto, usuarioId);
         return ResponseEntity.status(HttpStatus.CREATED).body(endereco);
     }
 
     @GetMapping
+    @Operation(summary = "Consultar todos os endereços do usuário")
     public ResponseEntity<List<EnderecoResponseDTO>> listarTodos(@PathVariable Long usuarioId) {
         List<EnderecoResponseDTO> enderecos = enderecoService.listarTodos(usuarioId);
         return ResponseEntity.ok(enderecos);
     }
 
     @PutMapping("/{enderecoId}")
+    @Operation(summary = "Atualizar endereço do usuário pelo ID")
     public ResponseEntity<EnderecoResponseDTO> atualizarEndereco(@PathVariable Long usuarioId, @PathVariable Long enderecoId, 
         @Valid @RequestBody EnderecoRequestDTO dto) {
 
@@ -49,6 +55,7 @@ public class EnderecoController {
     }
 
     @DeleteMapping("/{enderecoId}")
+    @Operation(summary = "Deletar endereço do usuário pelo ID")
     public ResponseEntity<Void> deletar(@PathVariable Long usuarioId, @PathVariable Long enderecoId){
         enderecoService.deletarPorId(usuarioId, enderecoId);
         return ResponseEntity.noContent().build();

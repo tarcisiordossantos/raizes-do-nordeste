@@ -36,7 +36,8 @@ public class UsuarioService {
     public UsuarioResponseDTO cadastrar(UsuarioRequestDTO dto){
 
         // Bloquear cadastro de mais de um usuário com o mesmo CPF
-        if (usuarioRepository.existsByCpf(dto.cpf())){
+        String cpfLimpo = dto.cpf().replaceAll("\\D", "");
+        if (usuarioRepository.existsByCpf(cpfLimpo)){
             throw new CadastroDuplicadoException("Este CPF já está cadastrado no sistema.");
         }
 
