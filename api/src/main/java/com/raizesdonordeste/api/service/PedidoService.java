@@ -3,6 +3,7 @@ package com.raizesdonordeste.api.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -107,23 +108,37 @@ public class PedidoService {
         //10. Calcular o valor total já com desconto aplicado
         novoPedido.setValorTotal(novoPedido.calcularValorTotal());
 
+        //11. Validação do cartão
+        String metodo = dto.pagamento().metodoPagamento();
+        String numero = dto.pagamento().numeroCartao();
+        YearMonth vencimento = dto.pagamento().vencimentoCartao();
+        String cvv = dto.pagamento().cvv();
+        if(!"PIX".equals(metodo) && (numero == null || numero.isBlank() || vencimento == null || cvv == null || cvv.isBlank())){
+            throw new IllegalArgumentException("Para método pagamento CREDITO ou DEBITO, as informações do cartão devem ser preenchidas.");
+        }
 
-        //11. Confirmação do pagamento (mock)
-        boolean confirmacaoPagamento = pagamentoGateway.validarPagamento(novoPedido);
+        //12. Confirmação do pagamento (mock)
+        boolean confirmacaoPagamento;
+        if("PIX".equals(metodo)){
+            confirmacaoPagamento = pagamentoGateway.validarPagamentoPix(novoPedido);
+        }else {
+            confirmacaoPagamento = pagamentoGateway.validarPagamentoCartao(novoPedido, numero, vencimento, cvv);
+        }
+
         if (!confirmacaoPagamento){
             throw new FalhaNoPagamentoException("Houve uma falha na tentativa de pagamento");
         } 
-        else { // 12. Registra pagamento, muda status do pedido e gera pontos de fidelidade 
+        else { // 13. Registra pagamento, muda status do pedido e gera pontos de fidelidade 
             novoPedido.getPagamentos().getFirst().registrarPagamento();
             novoPedido.setStatusPedido("PAGAMENTO_CONFIRMADO");
             int novosPontos = (novoPedido.getValorTotal().subtract(novoPedido.getValorEntrega())).intValue();
             usuario.setPontosFidelidade(usuario.getPontosFidelidade() + novosPontos);
         }
 
-        //13. Dar baixa nos estoques da Unidade
+        //14. Dar baixa nos estoques da Unidade
         estoquesService.baixarEstoques(unidade, itens);
 
-        //14. Salva novo pedido
+        //15. Salva novo pedido
         pedidoRepository.save(novoPedido);
 
         return PedidoResponseDTO.fromEntity(novoPedido);
