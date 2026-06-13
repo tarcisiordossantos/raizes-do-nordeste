@@ -43,7 +43,6 @@
         +calcularValorTotal()
         +calcularPrazoEntrega()
         +cancelar()
-        +concluir()
     }
     class Pagamento{
         -Long id

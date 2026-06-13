@@ -1,5 +1,6 @@
 package com.raizesdonordeste.api.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,14 +18,15 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 public record PedidoRequestDTO(
-    @Schema(example = "APP|BALCAO|TOTEN")
-    @Pattern(regexp = "^(APP|BALCAO|TOTEN)?$")
+    @Schema(example = "APP|BALCAO|TOTEM")
+    @Pattern(regexp = "^(APP|BALCAO|TOTEM)?$")
     String canalOrigem,
     @Schema(example = "ENTREGA|RETIRADA")
     @Pattern(regexp = "^(ENTREGA|RETIRADA)?$")
     String formaEntrega,
     @Size(max = 255) 
     String observacoes,
+    Boolean usarFidelidade,
     @Schema(example = "1")
     @NotNull(message = "campo de preenchimento obrigatório") 
     Long usuarioId,
@@ -41,6 +43,7 @@ public record PedidoRequestDTO(
         pedido.setStatusPedido("AGUARDANDO_PAGAMENTO");
         pedido.setCanalOrigem(this.canalOrigem);
         pedido.setFormaEntrega(this.formaEntrega);
+        pedido.setValorEntrega(BigDecimal.valueOf(0));
         pedido.setObservacoes(this.observacoes);
         pedido.setUsuario(usuario);
         pedido.setUnidade(unidade);
@@ -48,7 +51,6 @@ public record PedidoRequestDTO(
         for(ItemPedido item : itens){
             item.setPedido(pedido);
         }
-        pedido.setValorTotal(pedido.calcularValorTotal());
 
         Pagamento pagamentoEntity = this.pagamento.toEntity();
         pagamentoEntity.setPedido(pedido);

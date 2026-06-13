@@ -28,7 +28,7 @@ public record UsuarioRequestDTO(
     String nome,
     @NotNull(message = "campo de preenchimento obrigatório") 
     @Schema(example = "2000-01-31")
-    @Past 
+    @Past(message = "data de nascimento deve estar no passado") 
     LocalDate dataNascimento,
     @Schema(example = "exemplo@mail.com")
     @NotBlank(message = "campo de preenchimento obrigatório") 

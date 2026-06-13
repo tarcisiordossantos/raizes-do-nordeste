@@ -1,5 +1,8 @@
 package com.raizesdonordeste.api.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -12,6 +15,8 @@ import com.raizesdonordeste.api.domain.Unidade;
 import com.raizesdonordeste.api.domain.Usuario;
 import com.raizesdonordeste.api.dto.PedidoRequestDTO;
 import com.raizesdonordeste.api.dto.PedidoResponseDTO;
+import com.raizesdonordeste.api.dto.PedidoUpdateDTO;
+import com.raizesdonordeste.api.exception.CancelamentoNaoPermitidoException;
 import com.raizesdonordeste.api.exception.FalhaNoPagamentoException;
 import com.raizesdonordeste.api.gateway.PagamentoGateway;
 import com.raizesdonordeste.api.repository.PedidoRepository;
@@ -49,11 +54,11 @@ public class PedidoService {
 
         //1. Recupera Unidade que atende o pedido
         Unidade unidade = unidadeRepository.findById(dto.unidadeId())
-            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado unidade com ID" + dto.unidadeId()));
+            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado unidade com ID " + dto.unidadeId()));
 
         //2. Recupera Usuario que realizou o pedido
         Usuario usuario = usuarioRepository.findById(dto.usuarioId())
-            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado usuário com ID" + dto.usuarioId()));
+            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado usuário com ID " + dto.usuarioId()));
 
         //3. Criar lista com todos os Ids dos produtos
         List<Long> idsProdutos = dto.itensPedido().stream()
@@ -80,19 +85,45 @@ public class PedidoService {
         
         //8. Cria a entidade Pedido para ser salva no Banco de Dados
         Pedido novoPedido = dto.toEntity(usuario, unidade, itens);
-        
-        //9. Confirmação do pagamento (mock)
+
+        //9. Caso usar fidelidade seja true, o desconto equivale a 5% do valor da fidelidade acumulada, limitado a 20% do valor dos produtos
+        BigDecimal desconto = new BigDecimal("0");
+        if(dto.usarFidelidade() != null && dto.usarFidelidade()){
+            desconto = BigDecimal.valueOf(usuario.getPontosFidelidade())
+                .multiply(new BigDecimal("0.05")).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal totalProdutos = novoPedido.calcularTotalProdutos();
+            BigDecimal limiteMaximoDesconto = totalProdutos.multiply(new BigDecimal("0.20"))
+                .setScale(2, RoundingMode.HALF_UP);
+            if(desconto.compareTo(limiteMaximoDesconto) > 0){
+                desconto = limiteMaximoDesconto;
+                int pontosUtilizados = desconto.multiply(new BigDecimal("20")).intValue();
+                usuario.setPontosFidelidade(usuario.getPontosFidelidade() - pontosUtilizados);
+            } else {
+                usuario.setPontosFidelidade(0);
+            }
+            novoPedido.setDesconto(desconto);
+        } 
+
+        //10. Calcular o valor total já com desconto aplicado
+        novoPedido.setValorTotal(novoPedido.calcularValorTotal());
+
+
+        //11. Confirmação do pagamento (mock)
         boolean confirmacaoPagamento = pagamentoGateway.validarPagamento(novoPedido);
         if (!confirmacaoPagamento){
             throw new FalhaNoPagamentoException("Houve uma falha na tentativa de pagamento");
-        } else {
+        } 
+        else { // 12. Registra pagamento, muda status do pedido e gera pontos de fidelidade 
             novoPedido.getPagamentos().getFirst().registrarPagamento();
+            novoPedido.setStatusPedido("PAGAMENTO_CONFIRMADO");
+            int novosPontos = (novoPedido.getValorTotal().subtract(novoPedido.getValorEntrega())).intValue();
+            usuario.setPontosFidelidade(usuario.getPontosFidelidade() + novosPontos);
         }
 
-        //10. Dar baixa nos estoques da Unidade
+        //13. Dar baixa nos estoques da Unidade
         estoquesService.baixarEstoques(unidade, itens);
 
-        //11. Salva novo pedido
+        //14. Salva novo pedido
         pedidoRepository.save(novoPedido);
 
         return PedidoResponseDTO.fromEntity(novoPedido);
@@ -106,6 +137,9 @@ public class PedidoService {
     }
 
     public List<PedidoResponseDTO> consultarPedidosUnidade(Long id){
+        if(!unidadeRepository.existsById(id)){
+            throw new EntityNotFoundException("Não foi encontrado unidade com ID " + id);
+        }
         List<Pedido> pedidos = pedidoRepository.findByUnidadeId(id);
         List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
             .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
@@ -114,10 +148,85 @@ public class PedidoService {
     }
 
     public List<PedidoResponseDTO> consultarPedidosUsuario(Long id){
+        if(!usuarioRepository.existsById(id)){
+            throw new EntityNotFoundException("Não foi encontrado usuário com ID " + id);
+        }
         List<Pedido> pedidos = pedidoRepository.findByUsuarioId(id);
         List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
             .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
         
         return pedidosDTO;
     }
+
+    public List<PedidoResponseDTO> consultarPedidosPorUnidadeEUsuario(Long unidadeId, Long usuarioId){
+        if(!unidadeRepository.existsById(unidadeId)){
+            throw new EntityNotFoundException("Não foi encontrado unidade com ID " + unidadeId);
+        }
+        if(!usuarioRepository.existsById(usuarioId)){
+            throw new EntityNotFoundException("Não foi encontrado usuário com ID " + usuarioId);
+        }
+        List<Pedido> pedidos = pedidoRepository.findByUnidadeIdAndUsuarioId(unidadeId, usuarioId);
+        List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
+            .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
+        
+        return pedidosDTO;
+
+    }
+
+    @Transactional
+    public PedidoResponseDTO atualizarPedido(Long pedidoId, PedidoUpdateDTO dto){
+        
+        Pedido pedidoAtualizavel = pedidoRepository.findById(pedidoId)
+            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado pedido com ID " + pedidoId));
+        
+        if(!usuarioRepository.existsById(dto.usuarioId())){
+            throw new EntityNotFoundException("Não foi encontrado usuário com ID " + dto.usuarioId());
+        }
+
+        if(!pedidoAtualizavel.getUsuario().getId().equals(dto.usuarioId())){
+            throw new IllegalArgumentException("O pedido não pertece ao usuário informado.");
+        }
+
+       //Procedimentos para cancelamento do pedido
+        if("CANCELADO".equals(dto.statusPedido())){
+            if(!"APP".equals(pedidoAtualizavel.getCanalOrigem())){
+                throw new CancelamentoNaoPermitidoException("Cancelamento permitido apenas para pedidos originados no APP");
+            }
+            if(!"PAGAMENTO_CONFIRMADO".equals(pedidoAtualizavel.getStatusPedido()) && !"AGUARDANDO_PAGAMENTO".equals(pedidoAtualizavel.getStatusPedido())){
+                throw new CancelamentoNaoPermitidoException("Cancelamento permitido apenas para pedidos com status AGUARDANDO_PAGAMENTO ou PAGAMENTO_CONFIRMADO");    
+            }
+
+            Long idUltimoPedido = pedidoRepository.findTopByUsuarioIdOrderByIdDesc(dto.usuarioId())
+                .map(p -> p.getId()).orElse(0L);
+
+            if(!pedidoAtualizavel.getId().equals(idUltimoPedido)){
+                throw new CancelamentoNaoPermitidoException("Cancelamento permitido apenas para o último pedido realizado pelo usuário");
+            }
+
+            pedidoAtualizavel.setStatusPedido("CANCELADO");
+            pedidoAtualizavel.setObservacoes(dto.observacoes());
+
+            pedidoAtualizavel.getPagamentos().getLast().setStatusPagamento("A_ESTORNAR");
+            pedidoAtualizavel.getPagamentos().getLast().setValor(BigDecimal.ZERO);
+            pedidoAtualizavel.getPagamentos().getLast().setDataPagamento(LocalDateTime.now());
+
+            //Procedimentos para retornar pontuação de fidelidade ao valor anterior ao pedido cancelado
+            if(pedidoAtualizavel.getDesconto() != null && pedidoAtualizavel.getDesconto().compareTo(BigDecimal.ZERO) > 0){
+                int pontosGastos = pedidoAtualizavel.getDesconto().multiply(new BigDecimal("20")).intValue();
+                int pontosGanhos = pedidoAtualizavel.getValorTotal().subtract(pedidoAtualizavel.getValorEntrega()).intValue();
+                int saldoAtualizado = pedidoAtualizavel.getUsuario().getPontosFidelidade() + pontosGastos - pontosGanhos;
+                pedidoAtualizavel.getUsuario().setPontosFidelidade(Math.max(0, saldoAtualizado));
+            } else {
+                int pontosGanhos = pedidoAtualizavel.getValorTotal().subtract(pedidoAtualizavel.getValorEntrega()).intValue();
+                int saldoAtualizado = pedidoAtualizavel.getUsuario().getPontosFidelidade() - pontosGanhos;
+                pedidoAtualizavel.getUsuario().setPontosFidelidade(Math.max(0, saldoAtualizado));
+            }
+
+        } else { //Caso a atualização seja apenas para adicionar uma observação ao pedido
+            pedidoAtualizavel.setObservacoes(dto.observacoes());
+        }
+
+        return PedidoResponseDTO.fromEntity(pedidoAtualizavel);
+    }
+
 }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record ItemPedidoRequestDTO(
+    @NotNull(message = "campo de preenchimento obrigatório") 
     @Min(value = 1) 
     int quantidade,
     @NotNull(message = "campo de preenchimento obrigatório") 

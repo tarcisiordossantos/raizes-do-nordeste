@@ -55,7 +55,7 @@ public class Pedido {
     @Column
     @PositiveOrZero
     private BigDecimal valorTotal;
-    @Column
+    @Column(name = "observacao")
     @Size(max = 255)
     private String observacoes;
 
@@ -99,15 +99,21 @@ public class Pedido {
         return valorTotal;
     }
 
+    public BigDecimal calcularTotalProdutos() {
+        BigDecimal subtotal = BigDecimal.ZERO;
+
+        for(ItemPedido item : itensPedido){
+            subtotal = subtotal.add(item.calcularSubtotal()); 
+        }
+
+        return subtotal;
+    }
+
     public void calcularPrazoEntrega() {
         //A implementar
     }
 
     public void cancelar() {
-        //A implementar
-    }
-
-    public void concluir() {
         //A implementar
     }
 }

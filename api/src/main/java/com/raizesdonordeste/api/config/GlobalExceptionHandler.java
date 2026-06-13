@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.raizesdonordeste.api.dto.ErroResponseDTO;
 import com.raizesdonordeste.api.dto.ErroValidacaoCampoDTO;
 import com.raizesdonordeste.api.exception.CadastroDuplicadoException;
+import com.raizesdonordeste.api.exception.CancelamentoNaoPermitidoException;
 import com.raizesdonordeste.api.exception.FalhaNoPagamentoException;
 import com.raizesdonordeste.api.exception.ProdutoIndisponivelException;
 import com.raizesdonordeste.api.exception.UnidadeSemCardapioAtivoException;
@@ -26,6 +27,21 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CadastroDuplicadoException.class)
     public ResponseEntity<ErroResponseDTO> tratarCadastroDuplicado(
         CadastroDuplicadoException ex, HttpServletRequest request)
+    {
+        ErroResponseDTO erro = new ErroResponseDTO(
+            LocalDateTime.now(),
+            HttpStatus.UNPROCESSABLE_CONTENT.value(),
+            "Regra de Negócio Violada",
+            ex.getMessage(),
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(erro);
+    }
+
+    @ExceptionHandler(CancelamentoNaoPermitidoException.class)
+    public ResponseEntity<ErroResponseDTO> tratarCancelamentoNaoPermitido(
+        CancelamentoNaoPermitidoException ex, HttpServletRequest request)
     {
         ErroResponseDTO erro = new ErroResponseDTO(
             LocalDateTime.now(),

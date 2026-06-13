@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.raizesdonordeste.api.dto.PedidoRequestDTO;
 import com.raizesdonordeste.api.dto.PedidoResponseDTO;
+import com.raizesdonordeste.api.dto.PedidoUpdateDTO;
 import com.raizesdonordeste.api.service.PedidoService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,20 +47,36 @@ public class PedidoController {
     }
 
     @GetMapping
-    @Operation(summary = "Cosultar todos os pedidos do Usuário ou da Unidade")
+    @Operation(summary = "Cosultar todos os pedidos do Usuário e/ou da Unidade")
     public ResponseEntity<List<PedidoResponseDTO>> listarPedidos(
         @RequestParam(value = "unidadeId", required = false) Long unidadeId,
         @RequestParam(value = "usuarioId", required = false) Long usuarioId){
         
-        if(unidadeId != null){
+        
+        if(unidadeId != null && usuarioId != null){
+            List<PedidoResponseDTO> pedidos = pedidoService.consultarPedidosPorUnidadeEUsuario(unidadeId, usuarioId);
+            return ResponseEntity.ok(pedidos);
+        } else if(unidadeId != null){
             List<PedidoResponseDTO> pedidos = pedidoService.consultarPedidosUnidade(unidadeId);
             return ResponseEntity.ok(pedidos);
-        } 
-
-        if(usuarioId != null){
+        } else if (usuarioId != null){
             List<PedidoResponseDTO> pedidos = pedidoService.consultarPedidosUsuario(usuarioId);
             return ResponseEntity.ok(pedidos);
+        }else {
+            return ResponseEntity.ok(List.of());
         }
-        return ResponseEntity.ok(List.of());
+        
     }
+
+    @PatchMapping("/{id}")
+    @Operation(
+        summary = "Atualizar observação do pedido ou cancelá-lo",
+        description = "Apenas é possível cancelamento de pedidos com status AGUARDANDO_PAGAMENTO ou PAGAMENTO_CONFIRMADO, "
+                    +" com canal de origem APP e que seja o último pedido realizado pelo usuário." )
+    public ResponseEntity<PedidoResponseDTO> atualizarPedido(@PathVariable Long id, @Valid @RequestBody PedidoUpdateDTO dto){
+        PedidoResponseDTO pedido = pedidoService.atualizarPedido(id, dto);
+
+        return ResponseEntity.ok(pedido);
+    }
+    
 }
