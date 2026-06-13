@@ -6,6 +6,7 @@ import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -87,10 +88,24 @@ public class UsuarioService {
 
     @Transactional
     public void deletarPorId(Long id){
-        if(!usuarioRepository.existsById(id)){
-            throw new EntityNotFoundException("Não foi encontrado usuário com ID " + id);
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado usuário com ID " + id));
+       
+        if (!usuario.getPedidos().isEmpty()){
+            String cpfAnonimo = String.format("%011d", usuario.getId());
+
+            usuario.setCpf(cpfAnonimo);
+            usuario.setNome("Anonimizado (LGPD)");
+            usuario.setDataNascimento(LocalDate.now());
+            usuario.setEmail("anonimizado"+id+"@email.com");
+            usuario.setTelefone(null);
+            usuario.setSenha("**********");
+            usuario.setGenero(null);
+            usuario.setPontosFidelidade(0);
+            usuario.getEnderecos().clear();
+        } else {
+            usuarioRepository.deleteById(id);
         }
-        usuarioRepository.deleteById(id);
     }
 
     @Transactional

@@ -55,7 +55,9 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Deletar usuário por seu ID")
+    @Operation(
+        summary = "Deletar usuário por seu ID", 
+        description = "Deleta o usuário que não tem pedido registrado e anomimiza o que tem pedido registrado")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         usuarioService.deletarPorId(id);
         return ResponseEntity.noContent().build();

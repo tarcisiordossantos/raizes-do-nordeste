@@ -112,8 +112,4 @@ public class Pedido {
     public void calcularPrazoEntrega() {
         //A implementar
     }
-
-    public void cancelar() {
-        //A implementar
-    }
 }

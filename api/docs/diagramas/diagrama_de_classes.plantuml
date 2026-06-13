@@ -40,9 +40,9 @@
 
         +adicionarItem()
         +removerItem()
+        +calcularTotalProdutos()
         +calcularValorTotal()
         +calcularPrazoEntrega()
-        +cancelar()
     }
     class Pagamento{
         -Long id
