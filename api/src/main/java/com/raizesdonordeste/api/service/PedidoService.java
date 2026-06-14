@@ -26,8 +26,10 @@ import com.raizesdonordeste.api.repository.UnidadeRepository;
 import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
@@ -38,17 +40,6 @@ public class PedidoService {
     private final CardapioService cardapioService;
     private final PagamentoGateway pagamentoGateway;
 
-
-    PedidoService(PedidoRepository pedidoRepository, ProdutoRepository produtoRepository, UnidadeRepository unidadeRepository, UsuarioRepository usuarioRepository, EstoquesService estoquesService, CardapioService cardapioService, PagamentoGateway pagamentoGateway)
-    {
-        this.pedidoRepository = pedidoRepository;
-        this.produtoRepository = produtoRepository;
-        this.unidadeRepository = unidadeRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.estoquesService = estoquesService;
-        this.cardapioService = cardapioService;
-        this.pagamentoGateway = pagamentoGateway;
-    }
 
     @Transactional
     public PedidoResponseDTO realizarPedido(PedidoRequestDTO dto){

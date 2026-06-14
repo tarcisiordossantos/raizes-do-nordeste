@@ -48,7 +48,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @Operation(summary = "Listar todos usuários cadastrados")
+    @Operation(summary = "Listar todos os usuários cadastrados")
     public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         List<UsuarioResponseDTO> usuarios = usuarioService.listarTodos();
         return ResponseEntity.ok(usuarios);

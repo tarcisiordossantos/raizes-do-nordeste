@@ -1,14 +1,15 @@
 package com.raizesdonordeste.api.service;
 
 import com.raizesdonordeste.api.repository.PerfilRepository;
-import com.raizesdonordeste.api.repository.UnidadeRepository;
 import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,17 +22,14 @@ import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
 import com.raizesdonordeste.api.exception.CadastroDuplicadoException;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PerfilRepository perfilRepository;
-    //private final BCryptPasswordEncoder codificador = new BCryptPasswordEncoder();
+    private final BCryptPasswordEncoder codificador = new BCryptPasswordEncoder();
 
-    UsuarioService(UsuarioRepository usuarioRepository, PerfilRepository perfilRepository, UnidadeRepository unidadeRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.perfilRepository = perfilRepository;
-    }
 
     @Transactional
     public UsuarioResponseDTO cadastrar(UsuarioRequestDTO dto){
@@ -52,8 +50,8 @@ public class UsuarioService {
 
 
         //Criptografar a senha com BCrypt
-        //String senhaCriptografada = codificador.encode(novoUsuario.getSenha());
-        //novoUsuario.setSenha(senhaCriptografada);
+        String senhaCriptografada = codificador.encode(novoUsuario.getSenha());
+        novoUsuario.setSenha(senhaCriptografada);
 
         // Usuario deve receber inicialmente o Perfil "CLIENTE"
         Perfil perfilCliente = perfilRepository.findByNome("CLIENTE")
@@ -111,14 +109,19 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponseDTO atualizarCadastro(Long id,  UsuarioUpdateDTO dto){
         Usuario usuario = usuarioRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado usuário com ID " + id));      
+            .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado usuário com ID " + id));      
 
         // Bloquear cadastro de mais de um usuário com o mesmo E-mail
         if (usuarioRepository.existsByEmail(dto.email())){
                     throw new CadastroDuplicadoException("Este E-mail já está cadastrado no sistema.");
         }
 
-        usuario.alterarInformacoes(dto);
+        String senhaCriptografada = "";
+        if(dto.senha() != null && !dto.senha().isBlank()){
+            senhaCriptografada = codificador.encode(dto.senha());
+        }
+        
+        usuario.alterarInformacoes(dto, senhaCriptografada);
         
         usuarioRepository.save(usuario);
     

@@ -13,17 +13,15 @@ import com.raizesdonordeste.api.repository.EnderecoRepository;
 import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class EnderecoService {
     private final UsuarioRepository usuarioRepository;
     private final EnderecoRepository enderecoRepository;
 
-    EnderecoService(UsuarioRepository usuarioRepository, EnderecoRepository enderecoRepository) {
-        this.usuarioRepository = usuarioRepository;
-        this.enderecoRepository = enderecoRepository;
-    }
 
     @Transactional
     public EnderecoResponseDTO cadastrar(EnderecoRequestDTO dto, Long usuarioId){

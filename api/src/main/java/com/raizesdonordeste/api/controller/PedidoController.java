@@ -47,7 +47,7 @@ public class PedidoController {
     }
 
     @GetMapping
-    @Operation(summary = "Cosultar todos os pedidos do Usuário e/ou da Unidade")
+    @Operation(summary = "Consultar todos os pedidos do Usuário e/ou da Unidade")
     public ResponseEntity<List<PedidoResponseDTO>> listarPedidos(
         @RequestParam(value = "unidadeId", required = false) Long unidadeId,
         @RequestParam(value = "usuarioId", required = false) Long usuarioId){
