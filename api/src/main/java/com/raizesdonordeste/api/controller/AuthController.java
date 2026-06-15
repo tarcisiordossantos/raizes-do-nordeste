@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,9 @@ import com.raizesdonordeste.api.security.TokenService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -30,19 +33,26 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto){
-        var usernamePassword = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
-        var auth = this.authenticationManager.authenticate(usernamePassword);
-        var usuario = (Usuario) auth.getPrincipal();
-        String token = tokenService.gerarToken(usuario);
+        try {
+            var usernamePassword = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
+            var auth = this.authenticationManager.authenticate(usernamePassword);
+            var usuario = (Usuario) auth.getPrincipal();
+            String token = tokenService.gerarToken(usuario);
 
-        List<String> nomesPerfis = usuario.getPerfis().stream()
-            .map(perfil -> perfil.getNome().toUpperCase())
-            .toList();
+            List<String> nomesPerfis = usuario.getPerfis().stream()
+                .map(perfil -> perfil.getNome().toUpperCase())
+                .toList();
 
-        var UsuarioSumario = new UsuarioSumarioDTO(usuario.getId(), usuario.getNome(), nomesPerfis);
-        var response = new LoginResponseDTO(token, "Bearer", 7200L, UsuarioSumario);
+            var UsuarioSumario = new UsuarioSumarioDTO(usuario.getId(), usuario.getNome(), nomesPerfis);
+            var response = new LoginResponseDTO(token, "Bearer", 7200L, UsuarioSumario);
 
-        return ResponseEntity.ok(response);
+            log.info("[AUDITORIA] Autenticacao realizada com sucesso para o usuario {}", dto.email());
+
+            return ResponseEntity.ok(response);
+        } catch (BadCredentialsException e){
+            log.warn("[AUDITORIA] Tentativa de login INVALIDA para o e-mail {}", dto.email());
+            throw e;
+        }
     }
 
 }

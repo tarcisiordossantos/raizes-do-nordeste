@@ -27,7 +27,9 @@ import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -132,6 +134,9 @@ public class PedidoService {
         //15. Salva novo pedido
         pedidoRepository.save(novoPedido);
 
+        log.info("[AUDITORIA] Novo pedido criado. Codigo do Pedido {} | Unidade ID {} | Cliente ID {} | Valor Total: R$ {}",
+            novoPedido.getId(), unidade.getId(), usuario.getId(), novoPedido.getValorTotal());
+
         return PedidoResponseDTO.fromEntity(novoPedido);
     }
 
@@ -230,6 +235,8 @@ public class PedidoService {
                 int saldoAtualizado = pedidoAtualizavel.getUsuario().getPontosFidelidade() - pontosGanhos;
                 pedidoAtualizavel.getUsuario().setPontosFidelidade(Math.max(0, saldoAtualizado));
             }
+
+            log.warn("[AUDITORIA] Pedido ID {} foi CANCELADO pelo Usuario ID {}", pedidoId, dto.usuarioId());
 
         } else { //Caso a atualização seja apenas para adicionar uma observação ao pedido
             pedidoAtualizavel.setObservacoes(dto.observacoes());

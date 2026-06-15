@@ -5,6 +5,7 @@ import com.raizesdonordeste.api.repository.UsuarioRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,6 +22,7 @@ import com.raizesdonordeste.api.dto.UsuarioResponseDTO;
 import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
 import com.raizesdonordeste.api.exception.CadastroDuplicadoException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -111,6 +113,7 @@ public class UsuarioService {
         } else {
             usuarioRepository.deleteById(id);
         }
+        log.info("[AUDITORIA] Direitos do Titular exercidos (LGPD). Usuario ID {} foi anonimizado/removido do sistema.", id);
     }
 
     @Transactional
