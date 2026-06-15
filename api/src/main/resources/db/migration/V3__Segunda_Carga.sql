@@ -2,7 +2,7 @@ INSERT INTO endereco (cep, logradouro, numero, bairro, cidade, estado, principal
 ('45600-000', 'Rua Principal', '50', 'Santo Antônio', 'Itabuna', 'BA', true);
 
 INSERT INTO unidade (endereco_id, regiao_id, nome, cnpj) VALUES 
-(17, 1, 'Unidade Itabuna Santo Antônio', '12.345.678/0002-99');
+(2, 1, 'Unidade Itabuna Santo Antônio', '12.345.678/0002-99');
 
 INSERT INTO cardapio (unidade_id, nome, ativo) VALUES 
 (2, 'Cardápio Principal', true);

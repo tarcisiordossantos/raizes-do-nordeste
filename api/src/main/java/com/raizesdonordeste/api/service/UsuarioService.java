@@ -55,9 +55,15 @@ public class UsuarioService {
 
         // Usuario deve receber inicialmente o Perfil "CLIENTE"
         Perfil perfilCliente = perfilRepository.findByNome("CLIENTE")
-        .orElseThrow(() -> new EntityNotFoundException("Perfil CLIENTE não localizado no banco de dados."));
-        
+            .orElseThrow(() -> new EntityNotFoundException("Perfil CLIENTE não localizado no banco de dados."));
         novoUsuario.getPerfis().add(perfilCliente);
+
+        //Primeiro usuário recebe o perfil de GERENTE
+        if (usuarioRepository.count() == 0){
+            Perfil perfilGerente = perfilRepository.findByNome("GERENTE")
+                .orElseThrow(() -> new EntityNotFoundException("Perfil GERENTE não localizado no banco de dados."));
+            novoUsuario.getPerfis().add(perfilGerente);
+        }
 
         // Vincular o consentimento principal (Termos de Uso e Privacidade) ao Usuario
         ConsentimentoLgpd consentimento = new ConsentimentoLgpd();
@@ -66,6 +72,7 @@ public class UsuarioService {
         novoUsuario.getConsentimentos().add(consentimento);
 
         usuarioRepository.save(novoUsuario);
+
         return UsuarioResponseDTO.fromEntity(novoUsuario);
     }
 

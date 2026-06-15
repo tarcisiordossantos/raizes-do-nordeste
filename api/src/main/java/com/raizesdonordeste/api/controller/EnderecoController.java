@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class EnderecoController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Cadastrar novo endereço para o usuário")
     public ResponseEntity<EnderecoResponseDTO> cadastrarEndereco(@Valid @RequestBody EnderecoRequestDTO dto, @PathVariable Long usuarioId) {
         EnderecoResponseDTO endereco = enderecoService.cadastrar(dto, usuarioId);
@@ -39,6 +41,7 @@ public class EnderecoController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Consultar todos os endereços do usuário")
     public ResponseEntity<List<EnderecoResponseDTO>> listarTodos(@PathVariable Long usuarioId) {
         List<EnderecoResponseDTO> enderecos = enderecoService.listarTodos(usuarioId);
@@ -46,6 +49,7 @@ public class EnderecoController {
     }
 
     @PutMapping("/{enderecoId}")
+    @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Atualizar endereço do usuário pelo ID")
     public ResponseEntity<EnderecoResponseDTO> atualizarEndereco(@PathVariable Long usuarioId, @PathVariable Long enderecoId, 
         @Valid @RequestBody EnderecoRequestDTO dto) {
@@ -55,6 +59,7 @@ public class EnderecoController {
     }
 
     @DeleteMapping("/{enderecoId}")
+    @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Deletar endereço do usuário pelo ID")
     public ResponseEntity<Void> deletar(@PathVariable Long usuarioId, @PathVariable Long enderecoId){
         enderecoService.deletarPorId(usuarioId, enderecoId);

@@ -135,12 +135,7 @@ public class PedidoService {
         return PedidoResponseDTO.fromEntity(novoPedido);
     }
 
-    public PedidoResponseDTO consultarPedidoPorId(Long id){
-        Pedido pedido = pedidoRepository.findById(id)
-        .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado pedido com ID " + id));
 
-        return PedidoResponseDTO.fromEntity(pedido);
-    }
 
     public List<PedidoResponseDTO> consultarPedidosUnidade(Long id){
         if(!unidadeRepository.existsById(id)){
@@ -149,9 +144,12 @@ public class PedidoService {
         List<Pedido> pedidos = pedidoRepository.findByUnidadeId(id);
         List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
             .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
+
         
         return pedidosDTO;
     }
+
+
 
     public List<PedidoResponseDTO> consultarPedidosUsuario(Long id){
         if(!usuarioRepository.existsById(id)){
@@ -161,8 +159,11 @@ public class PedidoService {
         List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
             .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
         
+        
         return pedidosDTO;
     }
+
+
 
     public List<PedidoResponseDTO> consultarPedidosPorUnidadeEUsuario(Long unidadeId, Long usuarioId){
         if(!unidadeRepository.existsById(unidadeId)){
@@ -175,9 +176,11 @@ public class PedidoService {
         List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
             .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
         
+        
         return pedidosDTO;
-
     }
+
+
 
     @Transactional
     public PedidoResponseDTO atualizarPedido(Long pedidoId, PedidoUpdateDTO dto){

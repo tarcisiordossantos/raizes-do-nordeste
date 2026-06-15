@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.raizesdonordeste.api.domain.Usuario;
 import com.raizesdonordeste.api.dto.PedidoRequestDTO;
 import com.raizesdonordeste.api.dto.PedidoResponseDTO;
 import com.raizesdonordeste.api.dto.PedidoUpdateDTO;
@@ -33,21 +36,35 @@ public class PedidoController {
     }
 
     @PostMapping
-    @Operation(summary = "Cadastrar novo pedido")
+    @PreAuthorize("hasAnyRole('GERENTE', 'ATENDENTE') or #dto.usuarioId == authentication.principal.id")
+    @Operation(
+        summary = "Cadastrar novo pedido", 
+        description = "O pedido pode ser realizado por GERENTE, ATENDENTE ou o próprio CLIENTE.")
     public ResponseEntity<PedidoResponseDTO> realizarPedido(@Valid @RequestBody PedidoRequestDTO dto){
         PedidoResponseDTO pedido = pedidoService.realizarPedido(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Consultar pedido cadastrado pelo ID")
-    public ResponseEntity<PedidoResponseDTO> consultarPedidoPorId(@PathVariable Long id){
-        PedidoResponseDTO pedido = pedidoService.consultarPedidoPorId(id);
-        return ResponseEntity.ok(pedido);
+
+
+    @GetMapping("/meus")
+    @PreAuthorize("hasRole('CLIENTE')")
+    @Operation(summary = "Consultar pedidos cadastrado do usuário autenticado")
+    public ResponseEntity<List<PedidoResponseDTO>> consultarPedidosUsuario(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
+
+        List<PedidoResponseDTO> pedidos = pedidoService.consultarPedidosUsuario(usuarioLogado.getId());
+        return ResponseEntity.ok(pedidos);
     }
 
+
+
     @GetMapping
-    @Operation(summary = "Consultar todos os pedidos do Usuário e/ou da Unidade")
+    @PreAuthorize("hasRole('GERENTE')")
+    @Operation(
+        summary = "Consultar todos os pedidos por Usuário e/ou da Unidade",
+        description = "Funcionalidade exclusiva para usuários com perfil GERENTE.")
     public ResponseEntity<List<PedidoResponseDTO>> listarPedidos(
         @RequestParam(value = "unidadeId", required = false) Long unidadeId,
         @RequestParam(value = "usuarioId", required = false) Long usuarioId){
@@ -68,7 +85,10 @@ public class PedidoController {
         
     }
 
+
+
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('GERENTE') or #dto.usuarioId == authentication.principal.id")
     @Operation(
         summary = "Atualizar observação do pedido ou cancelá-lo",
         description = "Apenas é possível cancelamento de pedidos com status AGUARDANDO_PAGAMENTO ou PAGAMENTO_CONFIRMADO, "

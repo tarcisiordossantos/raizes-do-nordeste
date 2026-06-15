@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,13 +35,16 @@ public class UsuarioController {
     }
 
     @PostMapping
-    @Operation(summary = "Cadastrar novo usuário com o perfil inicial CLIENTE")
+    @Operation(
+        summary = "Cadastrar novo usuário", 
+        description = "Para testes o usuário com id 1 recebe o perfil GERENTE e os demais apenas perfil CLIENTE")
     public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(@Valid @RequestBody UsuarioRequestDTO dto) {
         UsuarioResponseDTO usuario = usuarioService.cadastrar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuario);
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('GERENTE') or #id == authentication.principal.id")
     @Operation(summary = "Consultar usuário por seu ID")
     public ResponseEntity<UsuarioResponseDTO> consultarPorId(@PathVariable Long id) {
         UsuarioResponseDTO usuario = usuarioService.consultarPorId(id);
@@ -48,6 +52,7 @@ public class UsuarioController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('GERENTE')")
     @Operation(summary = "Listar todos os usuários cadastrados")
     public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         List<UsuarioResponseDTO> usuarios = usuarioService.listarTodos();
@@ -55,6 +60,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('GERENTE') or #id == authentication.principal.id")
     @Operation(
         summary = "Deletar usuário por seu ID", 
         description = "Deleta o usuário que não tem pedido registrado e anomimiza o que tem pedido registrado")
@@ -64,6 +70,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('GERENTE') or #id == authentication.principal.id")
     @Operation(
         summary = "Atualizar cadastro usuário por seu ID",
         description = "Não é possivel alterar o CPF do usuário e alterações de endereço devem ser feitas em rotas próprias")
