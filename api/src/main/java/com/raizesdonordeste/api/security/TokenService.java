@@ -29,7 +29,7 @@ public class TokenService {
             .toList();
 
         return Jwts.builder()
-                .setSubject(usuario.getEmail())
+                .setSubject(usuario.getCpf())
                 .claim("perfis", nomePerfis)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))

@@ -19,7 +19,7 @@ public class AutenticacaoService implements UserDetailsService{
     public UserDetails loadUserByUsername(String username)
         throws UsernameNotFoundException
     {
-        return usuarioRepository.findByEmail(username)
+        return usuarioRepository.findByCpf(username)
             .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com e-mail: "+ username));
     }
 

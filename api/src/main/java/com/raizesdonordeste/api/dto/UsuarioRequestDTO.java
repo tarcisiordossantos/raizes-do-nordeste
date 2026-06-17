@@ -18,11 +18,12 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UsuarioRequestDTO(
-    @Schema(example = "000.000.000-00")
+    @Schema(example = "123.456.789-10")
     @NotBlank(message = "campo de preenchimento obrigatório")
     //@CPF(message = "Deve utilizar o formato 123.456.789-10 ou 12345678910")
     @Size(min = 11, max = 14, message = "Campo deve ter no mínimo 11 e no máximo 14 caracteres") 
     String cpf,
+    @Schema(example = "FULANO DE TAL")
     @NotBlank(message = "campo de preenchimento obrigatório") 
     @Size(max = 150) 
     String nome,
@@ -30,7 +31,7 @@ public record UsuarioRequestDTO(
     @Schema(example = "2000-01-31")
     @Past(message = "data de nascimento deve estar no passado") 
     LocalDate dataNascimento,
-    @Schema(example = "exemplo@mail.com")
+    @Schema(example = "exemplo@email.com")
     @NotBlank(message = "campo de preenchimento obrigatório") 
     @Email (message = "campo deve ser preenchido em formato de e-mail válido: exemplo@mail.com")
     @Size(max = 150) 
@@ -38,6 +39,7 @@ public record UsuarioRequestDTO(
     @Schema(example = "(11)98888-8888 ou (11)8888-8888")
     @Pattern(regexp = "^(?:\\(?\\d{2}\\)?\\s?\\d{4,5}-?\\d{4})?$", message = "deve ser preenchido no formato (11)98888-8888 ou (11)8888-8888")
     String telefone,
+    @Schema(example = "******")
     @NotBlank(message = "campo de preenchimento obrigatório") 
     @Size(min = 6, max = 255, message = "Campo deve ter no mínimo 6 e no máximo 255 caracteres") 
     String senha,
@@ -55,7 +57,7 @@ public record UsuarioRequestDTO(
         usuario.setCpf(this.cpf.replaceAll("\\D", ""));
         usuario.setNome(this.nome);
         usuario.setDataNascimento(this.dataNascimento);
-        usuario.setEmail(this.email);
+        usuario.setEmail(this.email.toLowerCase());
         if(this.telefone != null){
             usuario.setTelefone(this.telefone.replaceAll("\\D", ""));
         }

@@ -106,7 +106,7 @@ public class Usuario implements UserDetails {
             this.setDataNascimento(dto.dataNascimento());
         }
         if(dto.email() != null){
-            this.setEmail(dto.email());
+            this.setEmail(dto.email().toLowerCase());
         }
         if(dto.telefone() != null){
             this.setTelefone(dto.telefone());
@@ -134,7 +134,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public String getUsername(){
-        return this.email;
+        return this.cpf;
     }
 
     @Override

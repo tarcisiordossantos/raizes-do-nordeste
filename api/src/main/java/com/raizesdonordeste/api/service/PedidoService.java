@@ -67,7 +67,7 @@ public class PedidoService {
                 Produto produto = produtos.stream()
                     .filter(p -> p.getId().equals(item.produtoId()))
                     .findFirst()
-                    .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado produto com ID" + item.produtoId()));
+                    .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado produto com ID " + item.produtoId()));
                 return item.toEntity(produto);
             }).toList();
         

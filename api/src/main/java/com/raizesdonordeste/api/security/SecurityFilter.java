@@ -29,9 +29,9 @@ public class SecurityFilter extends OncePerRequestFilter {
         String token = recuperarToken(request);
 
         if (token != null){
-            String email = tokenService.validarToken(token);
-            if (email != null){
-                Usuario usuario = usuarioRepository.findByEmail(email)
+            String cpf = tokenService.validarToken(token);
+            if (cpf != null){
+                Usuario usuario = usuarioRepository.findByCpf(cpf)
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
                 
                 var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());

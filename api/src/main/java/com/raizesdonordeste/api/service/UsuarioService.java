@@ -1,12 +1,5 @@
 package com.raizesdonordeste.api.service;
 
-import com.raizesdonordeste.api.repository.PerfilRepository;
-import com.raizesdonordeste.api.repository.UsuarioRepository;
-
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +14,12 @@ import com.raizesdonordeste.api.dto.UsuarioRequestDTO;
 import com.raizesdonordeste.api.dto.UsuarioResponseDTO;
 import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
 import com.raizesdonordeste.api.exception.CadastroDuplicadoException;
+import com.raizesdonordeste.api.repository.PerfilRepository;
+import com.raizesdonordeste.api.repository.UsuarioRepository;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -43,7 +42,7 @@ public class UsuarioService {
         }
 
         // Bloquear cadastro de mais de um usuário com o mesmo E-mail
-        if (usuarioRepository.existsByEmail(dto.email())){
+        if (usuarioRepository.existsByEmail(dto.email().toLowerCase())){
             throw new CadastroDuplicadoException("Este E-mail já está cadastrado no sistema.");
         }
 
@@ -122,7 +121,7 @@ public class UsuarioService {
             .orElseThrow(() -> new EntityNotFoundException("Não foi encontrado usuário com ID " + id));      
 
         // Bloquear cadastro de mais de um usuário com o mesmo E-mail
-        if (usuarioRepository.existsByEmail(dto.email())){
+        if (dto.email() != null && usuarioRepository.existsByEmail(dto.email())){
                     throw new CadastroDuplicadoException("Este E-mail já está cadastrado no sistema.");
         }
 

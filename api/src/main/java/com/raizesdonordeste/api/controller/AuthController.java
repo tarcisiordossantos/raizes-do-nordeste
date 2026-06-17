@@ -34,7 +34,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto){
         try {
-            var usernamePassword = new UsernamePasswordAuthenticationToken(dto.email(), dto.senha());
+            var usernamePassword = new UsernamePasswordAuthenticationToken(dto.cpf().replaceAll("\\D", ""), dto.senha());
             var auth = this.authenticationManager.authenticate(usernamePassword);
             var usuario = (Usuario) auth.getPrincipal();
             String token = tokenService.gerarToken(usuario);
@@ -46,11 +46,11 @@ public class AuthController {
             var UsuarioSumario = new UsuarioSumarioDTO(usuario.getId(), usuario.getNome(), nomesPerfis);
             var response = new LoginResponseDTO(token, "Bearer", 7200L, UsuarioSumario);
 
-            log.info("[AUDITORIA] Autenticacao realizada com sucesso para o usuario {}", dto.email());
+            log.info("[AUDITORIA] Autenticacao realizada com sucesso para o usuario {}", dto.cpf());
 
             return ResponseEntity.ok(response);
         } catch (BadCredentialsException e){
-            log.warn("[AUDITORIA] Tentativa de login INVALIDA para o e-mail {}", dto.email());
+            log.warn("[AUDITORIA] Tentativa de login INVALIDA para o e-mail {}", dto.cpf());
             throw e;
         }
     }
