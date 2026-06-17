@@ -22,6 +22,9 @@ import com.raizesdonordeste.api.dto.PedidoUpdateDTO;
 import com.raizesdonordeste.api.service.PedidoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -40,6 +43,12 @@ public class PedidoController {
     @Operation(
         summary = "Cadastrar novo pedido", 
         description = "O pedido pode ser realizado por GERENTE, ATENDENTE ou o próprio CLIENTE.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Pedido Cadastrado"),
+        @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou estar tentando acessar/modificar informações de outro usuário, salvo GERENTE (permissão total) ou ATENDENTE", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+    })
     public ResponseEntity<PedidoResponseDTO> realizarPedido(@Valid @RequestBody PedidoRequestDTO dto){
         PedidoResponseDTO pedido = pedidoService.realizarPedido(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
@@ -50,6 +59,10 @@ public class PedidoController {
     @GetMapping("/meus")
     @PreAuthorize("hasRole('CLIENTE')")
     @Operation(summary = "Consultar pedidos cadastrado do usuário autenticado")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso"),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado", content = @Content)
+    })
     public ResponseEntity<List<PedidoResponseDTO>> consultarPedidosUsuario(){
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         Usuario usuarioLogado = (Usuario) authentication.getPrincipal();
@@ -65,6 +78,11 @@ public class PedidoController {
     @Operation(
         summary = "Consultar todos os pedidos por Usuário e/ou da Unidade",
         description = "Funcionalidade exclusiva para usuários com perfil GERENTE.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso"),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou não possuir perfil GERENTE", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+    })
     public ResponseEntity<List<PedidoResponseDTO>> listarPedidos(
         @RequestParam(value = "unidadeId", required = false) Long unidadeId,
         @RequestParam(value = "usuarioId", required = false) Long usuarioId){
@@ -93,6 +111,13 @@ public class PedidoController {
         summary = "Atualizar observação do pedido ou cancelá-lo",
         description = "Apenas é possível cancelamento de pedidos com status AGUARDANDO_PAGAMENTO ou PAGAMENTO_CONFIRMADO, "
                     +" com canal de origem APP e que seja o último pedido realizado pelo usuário." )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Pedido atualizado/cancelado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou estar tentando acessar/modificar informações de outro usuário, salvo GERENTE (permissão total)", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content),
+        @ApiResponse(responseCode = "422", description = "Regra de Negócio Violada", content = @Content)
+    })
     public ResponseEntity<PedidoResponseDTO> atualizarPedido(@PathVariable Long id, @Valid @RequestBody PedidoUpdateDTO dto){
         PedidoResponseDTO pedido = pedidoService.atualizarPedido(id, dto);
 

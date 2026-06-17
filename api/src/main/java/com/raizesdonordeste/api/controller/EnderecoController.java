@@ -19,6 +19,9 @@ import com.raizesdonordeste.api.dto.EnderecoResponseDTO;
 import com.raizesdonordeste.api.service.EnderecoService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -35,6 +38,12 @@ public class EnderecoController {
     @PostMapping
     @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Cadastrar novo endereço para o usuário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Endereço Cadastrado"),
+        @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou estar tentando acessar/modificar informações de outro usuário, salvo GERENTE (permissão total)", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+    })
     public ResponseEntity<EnderecoResponseDTO> cadastrarEndereco(@Valid @RequestBody EnderecoRequestDTO dto, @PathVariable Long usuarioId) {
         EnderecoResponseDTO endereco = enderecoService.cadastrar(dto, usuarioId);
         return ResponseEntity.status(HttpStatus.CREATED).body(endereco);
@@ -43,6 +52,11 @@ public class EnderecoController {
     @GetMapping
     @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Consultar todos os endereços do usuário")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Endereços encontrados com sucesso"),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou estar tentando acessar/modificar informações de outro usuário, salvo GERENTE (permissão total)", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+    })
     public ResponseEntity<List<EnderecoResponseDTO>> listarTodos(@PathVariable Long usuarioId) {
         List<EnderecoResponseDTO> enderecos = enderecoService.listarTodos(usuarioId);
         return ResponseEntity.ok(enderecos);
@@ -51,6 +65,12 @@ public class EnderecoController {
     @PutMapping("/{enderecoId}")
     @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Atualizar endereço do usuário pelo ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Cadastro atualizado com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou estar tentando acessar/modificar informações de outro usuário, salvo GERENTE (permissão total)", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+    })
     public ResponseEntity<EnderecoResponseDTO> atualizarEndereco(@PathVariable Long usuarioId, @PathVariable Long enderecoId, 
         @Valid @RequestBody EnderecoRequestDTO dto) {
 
@@ -61,6 +81,12 @@ public class EnderecoController {
     @DeleteMapping("/{enderecoId}")
     @PreAuthorize("hasRole('GERENTE') or #usuarioId == authentication.principal.id")
     @Operation(summary = "Deletar endereço do usuário pelo ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Endereço deletado"),
+        @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),
+        @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou estar tentando acessar/modificar informações de outro usuário, salvo GERENTE (permissão total)", content = @Content),
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+    })
     public ResponseEntity<Void> deletar(@PathVariable Long usuarioId, @PathVariable Long enderecoId){
         enderecoService.deletarPorId(usuarioId, enderecoId);
         return ResponseEntity.noContent().build();
