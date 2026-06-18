@@ -7,10 +7,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.raizesdonordeste.api.domain.enuns.CanalOrigem;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,27 +35,27 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "data_pedido")
     private LocalDateTime dataPedido;
-    @Column
+    @Column(name = "status_pedido")
     @Size(max = 50)
     private String statusPedido;
-    @Column
-    @Size(max = 50)
-    private String canalOrigem;
-    @Column
+    @Column(name = "canal_origem")
+    @Enumerated(EnumType.STRING)
+    private CanalOrigem canalOrigem;
+    @Column(name = "forma_entrega")
     @Size(max = 50)
     private String formaEntrega;
-    @Column
+    @Column(name = "valor_entrega")
     @PositiveOrZero
     private BigDecimal valorEntrega;
-    @Column
+    @Column(name = "prazo_estimado")
     @PositiveOrZero
     private int prazoEstimado;
     @Column
     @PositiveOrZero
     private BigDecimal desconto;
-    @Column
+    @Column(name = "valor_total")
     @PositiveOrZero
     private BigDecimal valorTotal;
     @Column(name = "observacao")

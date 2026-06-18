@@ -5,12 +5,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.raizesdonordeste.api.domain.Pedido;
+import com.raizesdonordeste.api.domain.enuns.CanalOrigem;
 
 public record PedidoResponseDTO(
     Long id,
     LocalDateTime dataPedido,
     String statusPedido,
-    String canalOrigem,
+    CanalOrigem canalOrigem,
     String formaEntrega,
     BigDecimal valorEntrega,
     int prazoEstimado,

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.raizesdonordeste.api.domain.Usuario;
+import com.raizesdonordeste.api.domain.enuns.CanalOrigem;
 import com.raizesdonordeste.api.dto.PedidoRequestDTO;
 import com.raizesdonordeste.api.dto.PedidoResponseDTO;
 import com.raizesdonordeste.api.dto.PedidoUpdateDTO;
@@ -76,20 +77,27 @@ public class PedidoController {
     @GetMapping
     @PreAuthorize("hasRole('GERENTE')")
     @Operation(
-        summary = "Consultar todos os pedidos por Usuário e/ou da Unidade",
-        description = "Funcionalidade exclusiva para usuários com perfil GERENTE.")
+        summary = "Consultar todos os pedidos por Unidade, Canal ou Usuário",
+        description = "Funcionalidade exclusiva para usuários com perfil GERENTE. A pesquisa por Unidade pode ser combinada com Canal ou Usuário.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Pedidos encontrados com sucesso"),
         @ApiResponse(responseCode = "403", description = "Acesso não autorizado por não estar autenticado ou não possuir perfil GERENTE", content = @Content),
         @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
     })
     public ResponseEntity<List<PedidoResponseDTO>> listarPedidos(
-        @RequestParam(value = "unidadeId", required = false) Long unidadeId,
-        @RequestParam(value = "usuarioId", required = false) Long usuarioId){
+        @RequestParam(required = false) Long unidadeId,
+        @RequestParam(required = false) Long usuarioId,
+        @RequestParam(required = false) CanalOrigem canal){
         
         
         if(unidadeId != null && usuarioId != null){
-            List<PedidoResponseDTO> pedidos = pedidoService.consultarPedidosPorUnidadeEUsuario(unidadeId, usuarioId);
+            List<PedidoResponseDTO> pedidos = pedidoService.consultarPorUnidadeEUsuario(unidadeId, usuarioId);
+            return ResponseEntity.ok(pedidos);
+        } else if (unidadeId != null && canal != null){
+            List<PedidoResponseDTO> pedidos = pedidoService.consultarPorUnidadeECanal(unidadeId, canal);
+            return ResponseEntity.ok(pedidos);
+        } else if (canal != null){
+            List<PedidoResponseDTO> pedidos = pedidoService.consultarPorCanal(canal);
             return ResponseEntity.ok(pedidos);
         } else if(unidadeId != null){
             List<PedidoResponseDTO> pedidos = pedidoService.consultarPedidosUnidade(unidadeId);
@@ -110,7 +118,7 @@ public class PedidoController {
     @Operation(
         summary = "Atualizar observação do pedido ou cancelá-lo",
         description = "Apenas é possível cancelamento de pedidos com status AGUARDANDO_PAGAMENTO ou PAGAMENTO_CONFIRMADO, "
-                    +" com canal de origem APP e que seja o último pedido realizado pelo usuário." )
+                    +" e que seja o último pedido realizado pelo usuário." )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Pedido atualizado/cancelado com sucesso"),
         @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),

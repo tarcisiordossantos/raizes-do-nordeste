@@ -10,12 +10,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.raizesdonordeste.api.domain.Cardapio;
 import com.raizesdonordeste.api.domain.ItemPedido;
 import com.raizesdonordeste.api.domain.Unidade;
+import com.raizesdonordeste.api.dto.ProdutoResponseDTO;
 import com.raizesdonordeste.api.exception.ProdutoIndisponivelException;
 import com.raizesdonordeste.api.exception.UnidadeSemCardapioAtivoException;
+import com.raizesdonordeste.api.repository.CardapioRepository;
+import com.raizesdonordeste.api.repository.UnidadeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
 public class CardapioService {
+    private final UnidadeRepository unidadeRepository;
+    private final CardapioRepository cardapioRepository;
 
     public void consultarDisponibilidadeProdutos(Unidade unidade, List<ItemPedido> itens){
          //Seleciona o cardápio ativo na Unidade
@@ -32,5 +41,20 @@ public class CardapioService {
                 throw new ProdutoIndisponivelException("Produto "+item.getProduto().getNome()+ " não disponível no cardápio da Unidade.");
             }
         }
+    }
+
+    public List<ProdutoResponseDTO> cardapioAtivo(Long unidadeId){
+        if(!unidadeRepository.existsById(unidadeId)){
+            throw new EntityNotFoundException("Não foi encontrado unidade com ID " + unidadeId);
+        }
+
+        Cardapio cardapioAtivo = cardapioRepository.findByUnidadeIdAndAtivoTrue(unidadeId)
+            .orElseThrow(() -> new UnidadeSemCardapioAtivoException("A Unidade ID " + unidadeId + " não possui nenhum carpádio ativo."));
+
+        List<ProdutoResponseDTO> produtosCardapio = cardapioAtivo.getProdutosCardapio().stream()
+            .map(p -> ProdutoResponseDTO.fromEntity(p.getProduto())).toList();
+        
+        
+        return produtosCardapio;
     }
 }

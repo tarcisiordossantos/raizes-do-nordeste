@@ -9,6 +9,7 @@ import com.raizesdonordeste.api.domain.Pagamento;
 import com.raizesdonordeste.api.domain.Pedido;
 import com.raizesdonordeste.api.domain.Unidade;
 import com.raizesdonordeste.api.domain.Usuario;
+import com.raizesdonordeste.api.domain.enuns.CanalOrigem;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -18,9 +19,9 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 public record PedidoRequestDTO(
-    @Schema(example = "APP|BALCAO|TOTEM")
-    @Pattern(regexp = "^(APP|BALCAO|TOTEM)?$")
-    String canalOrigem,
+    @NotNull(message = "campo de preenchimento obrigatório") 
+    @Schema(example = "APP|BALCAO|TOTEM|WEB")
+    CanalOrigem canalOrigem,
     @Schema(example = "ENTREGA|RETIRADA")
     @Pattern(regexp = "^(ENTREGA|RETIRADA)?$")
     String formaEntrega,

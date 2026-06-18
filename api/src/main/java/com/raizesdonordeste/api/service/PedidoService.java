@@ -14,6 +14,7 @@ import com.raizesdonordeste.api.domain.Pedido;
 import com.raizesdonordeste.api.domain.Produto;
 import com.raizesdonordeste.api.domain.Unidade;
 import com.raizesdonordeste.api.domain.Usuario;
+import com.raizesdonordeste.api.domain.enuns.CanalOrigem;
 import com.raizesdonordeste.api.dto.PedidoRequestDTO;
 import com.raizesdonordeste.api.dto.PedidoResponseDTO;
 import com.raizesdonordeste.api.dto.PedidoUpdateDTO;
@@ -170,7 +171,7 @@ public class PedidoService {
 
 
 
-    public List<PedidoResponseDTO> consultarPedidosPorUnidadeEUsuario(Long unidadeId, Long usuarioId){
+    public List<PedidoResponseDTO> consultarPorUnidadeEUsuario(Long unidadeId, Long usuarioId){
         if(!unidadeRepository.existsById(unidadeId)){
             throw new EntityNotFoundException("Não foi encontrado unidade com ID " + unidadeId);
         }
@@ -181,6 +182,31 @@ public class PedidoService {
         List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
             .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
         
+        
+        return pedidosDTO;
+    }
+
+
+
+    public List<PedidoResponseDTO> consultarPorUnidadeECanal(Long unidadeId, CanalOrigem canal){
+        if(!unidadeRepository.existsById(unidadeId)){
+            throw new EntityNotFoundException("Não foi encontrado unidade com ID " + unidadeId);
+        }
+
+        List<Pedido> pedidos = pedidoRepository.findByUnidadeIdAndCanalOrigem(unidadeId, canal);
+        List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
+            .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
+        
+        return pedidosDTO;
+    }
+
+
+
+    public List<PedidoResponseDTO> consultarPorCanal(CanalOrigem canal){
+
+        List<Pedido> pedidos = pedidoRepository.findByCanalOrigem(canal);
+        List<PedidoResponseDTO> pedidosDTO = pedidos.stream()
+            .map(p -> PedidoResponseDTO.fromEntity(p)).toList();
         
         return pedidosDTO;
     }
@@ -203,9 +229,6 @@ public class PedidoService {
 
        //Procedimentos para cancelamento do pedido
         if("CANCELADO".equals(dto.statusPedido())){
-            if(!"APP".equals(pedidoAtualizavel.getCanalOrigem())){
-                throw new CancelamentoNaoPermitidoException("Cancelamento permitido apenas para pedidos originados no APP");
-            }
             if(!"PAGAMENTO_CONFIRMADO".equals(pedidoAtualizavel.getStatusPedido()) && !"AGUARDANDO_PAGAMENTO".equals(pedidoAtualizavel.getStatusPedido())){
                 throw new CancelamentoNaoPermitidoException("Cancelamento permitido apenas para pedidos com status AGUARDANDO_PAGAMENTO ou PAGAMENTO_CONFIRMADO");    
             }
