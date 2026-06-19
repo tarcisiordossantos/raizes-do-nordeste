@@ -1,6 +1,6 @@
 package com.raizesdonordeste.api.domain;
 
-import com.raizesdonordeste.api.dto.EnderecoRequestDTO;
+import com.raizesdonordeste.api.api.dto.EnderecoRequestDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

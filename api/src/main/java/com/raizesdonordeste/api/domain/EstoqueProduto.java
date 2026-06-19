@@ -2,7 +2,7 @@ package com.raizesdonordeste.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.raizesdonordeste.api.exception.ProdutoIndisponivelException;
+import com.raizesdonordeste.api.application.exception.ProdutoIndisponivelException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

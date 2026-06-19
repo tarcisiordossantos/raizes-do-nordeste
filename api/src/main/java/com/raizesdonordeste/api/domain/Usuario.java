@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.raizesdonordeste.api.dto.UsuarioUpdateDTO;
+import com.raizesdonordeste.api.api.dto.UsuarioUpdateDTO;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
