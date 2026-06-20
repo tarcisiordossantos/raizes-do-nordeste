@@ -69,6 +69,7 @@ Para testar os Endpoints deve acessar via Swagger UI com a aplicação rodando e
 | GET | /pedidos | Consultar pedidos por unidade, canal ou usuário | Perfil GERENTE**
 | GET | /pedidos/meus | Listar pedido do usuário autenticado | Usuário Autenticado
 | PATCH | /pedidos/{id} | Atualizar/Cancelar pedido realizado | Usuário Autenticado*
+---
 \* O usuário com perfil **CLIENTE** não consegue acessar, criar ou alterar recursos usando o ID de outro usuário.
 \* O perfil **GERENTE** concede acesso a todas as rotas e possibilita acessar, criar ou alterar recursos para o ID de outros usuários.
 ***
