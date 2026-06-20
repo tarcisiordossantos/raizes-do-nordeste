@@ -50,6 +50,8 @@ public class EstoquesService {
         }
     }
 
+
+
     @Transactional
     public void baixarEstoques(Unidade unidade, List<ItemPedido> itens){
         List<EstoqueProduto> estoquePUnidade = unidade.getEstoquesProdutos();
@@ -71,6 +73,33 @@ public class EstoquesService {
             }else {
                 EstoqueProduto estoqueP = mapEstoquesProdutos.get(item.getProduto().getId());
                 estoqueP.baixarEstoque(item.getQuantidade());
+            }
+        }
+    }
+
+
+
+    @Transactional
+    public void reporEstoquesCancelamento(Unidade unidade, List<ItemPedido> itens){
+        List<EstoqueProduto> estoquePUnidade = unidade.getEstoquesProdutos();
+        List<EstoqueIngrediente> estoqueIUnidade = unidade.getEstoquesIngredientes();
+
+        // Transforma os estoque em Maps para facilitar consulta
+        Map<Long, EstoqueProduto> mapEstoquesProdutos = estoquePUnidade.stream()
+            .collect(Collectors.toMap(e -> e.getProduto().getId(), e -> e));
+        Map<Long, EstoqueIngrediente> mapEstoquesIngredientes = estoqueIUnidade.stream()
+            .collect(Collectors.toMap(e -> e.getIngrediente().getId(), e -> e)); 
+
+        for(ItemPedido item : itens){
+            if(item.getProduto().isExigePreparo()){
+                for(IngredienteProduto ingredienteProduto : item.getProduto().getIngredientesProduto()){
+                    EstoqueIngrediente estoqueI = mapEstoquesIngredientes.get(ingredienteProduto.getIngrediente().getId());
+
+                    estoqueI.recarregarEstoque(item.getQuantidade() * ingredienteProduto.getQuantidade());
+                }
+            }else {
+                EstoqueProduto estoqueP = mapEstoquesProdutos.get(item.getProduto().getId());
+                estoqueP.recarregarEstoque(item.getQuantidade());
             }
         }
     }

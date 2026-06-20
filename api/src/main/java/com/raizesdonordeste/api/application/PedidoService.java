@@ -253,6 +253,10 @@ public class PedidoService {
                 pedidoAtualizavel.getUsuario().setPontosFidelidade(Math.max(0, saldoAtualizado));
             }
 
+
+            estoquesService.reporEstoquesCancelamento(pedidoAtualizavel.getUnidade(), pedidoAtualizavel.getItensPedido());
+
+
             log.warn("[AUDITORIA] Pedido ID {} foi CANCELADO pelo Usuario ID {}", pedidoId, dto.usuarioId());
 
         } else { //Caso a atualização seja apenas para adicionar uma observação ao pedido
