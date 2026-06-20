@@ -71,7 +71,7 @@ Para testar os Endpoints deve acessar via Swagger UI com a aplicação rodando e
 | PATCH | /pedidos/{id} | Atualizar/Cancelar pedido realizado | Usuário Autenticado*
 ---
 \* O usuário com perfil **CLIENTE** não consegue acessar, criar ou alterar recursos usando o ID de outro usuário.
-\* O perfil **GERENTE** concede acesso a todas as rotas e possibilita acessar, criar ou alterar recursos para o ID de outros usuários.
+\** O perfil **GERENTE** concede acesso a todas as rotas e possibilita acessar, criar ou alterar recursos para o ID de outros usuários.
 ***
 ## Migrations e Seeds
  Para realização de testes no projeto, foi utilizado o **Flyway** para criar a estrutura da tabelas necessárias ao funcionamento do projeto e popular estas com dados iniciais. Foram criadas duas unidades (ID 1 e 2) com seus respectivos estoques e cardápios, que podem ser consultados na aplicação. 
