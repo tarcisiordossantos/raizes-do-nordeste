@@ -51,7 +51,8 @@ public class PedidoController {
         @ApiResponse(responseCode = "400", description = "Não preenchimento de campo obrigatório ou preenchimento incorreto", content = @Content),
         @ApiResponse(responseCode = "401", description = "Acesso não autorizado por não estar autenticado ou com token expirado/inválido", content = @Content),
         @ApiResponse(responseCode = "403", description = "Perfil do usuário não permite acesso a esta rota por estar tentando acessar/modificar informações de outro usuário e não ter perfil GERENTE (permissão total) ou ATENDENTE", content = @Content),
-        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content)
+        @ApiResponse(responseCode = "404", description = "Recurso Não Encontrado", content = @Content),
+        @ApiResponse(responseCode = "422", description = "Falha no Processamento do Pagamento", content = @Content)
     })
     public ResponseEntity<PedidoResponseDTO> realizarPedido(@Valid @RequestBody PedidoRequestDTO dto){
         PedidoResponseDTO pedido = pedidoService.realizarPedido(dto);

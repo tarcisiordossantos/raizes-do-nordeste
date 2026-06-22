@@ -32,7 +32,7 @@ public class ItemPedido {
     private int quantidade;
     @Column
     private BigDecimal subtotal;
-    @Column
+    @Column(name = "status_produto")
     @Size(max = 50)
     private String statusProduto;
 

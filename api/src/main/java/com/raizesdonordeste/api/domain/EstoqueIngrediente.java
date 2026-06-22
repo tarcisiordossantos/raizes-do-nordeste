@@ -25,10 +25,10 @@ public class EstoqueIngrediente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(name = "quantidade_atual")
     @PositiveOrZero
     private double quantidadeAtual;
-    @Column
+    @Column(name = "quantidade_minima")
     @PositiveOrZero
     private double quantidadeMinima;
 

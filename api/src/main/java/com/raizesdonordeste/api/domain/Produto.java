@@ -41,11 +41,11 @@ public class Produto {
     @Column
     @Size(max = 150)
     private String categoria;
-    @Column
+    @Column(name = "preco_base")
     @NotNull
     @Positive
     private BigDecimal precoBase;
-    @Column
+    @Column(name = "exige_preparo")
     private boolean exigePreparo;
     @Column
     private boolean ativo;

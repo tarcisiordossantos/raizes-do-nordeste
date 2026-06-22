@@ -37,7 +37,7 @@ public class AuthController {
     @PostMapping("/login")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Token Gerado com Sucesso"),
-        @ApiResponse(responseCode = "403", description = "Credenciais Inválidas", content = @Content)
+        @ApiResponse(responseCode = "401", description = "Credenciais Inválidas", content = @Content)
     })
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto){
         try {

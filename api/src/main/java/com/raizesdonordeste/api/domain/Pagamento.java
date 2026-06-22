@@ -26,15 +26,15 @@ public class Pagamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column
+    @Column(name = "metodo_pagamento")
     @Size(max = 50)
     private String metodoPagamento;
-    @Column
+    @Column(name = "status_pagamento")
     @Size(max = 50)
     private String statusPagamento;
     @Column
     private BigDecimal valor;
-    @Column
+    @Column(name = "data_pagamento")
     private LocalDateTime dataPagamento;
 
     @ManyToOne

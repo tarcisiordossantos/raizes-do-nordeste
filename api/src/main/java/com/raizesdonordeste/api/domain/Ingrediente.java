@@ -30,7 +30,7 @@ public class Ingrediente {
     @Size(max = 150)
     @NotBlank
     private String nome;
-    @Column
+    @Column(name = "unidade_medida")
     @Size(max = 20)
     private String unidadeMedida;
 
