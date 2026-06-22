@@ -97,3 +97,28 @@ com.raizesdonordeste.api
 │   ├───gateway		# integração com gateway de pagamento (mock)
 │   ├───repository	# Interfaces de persistência
 │   └───security	# Filtros de acesso e configuração de autenticação
+```
+## Testes no Postman
+Caso deseje executar testes utilizando o Postman, deve seguir os seguintes passos:
+1. Abra o **[Postman](https://www.postman.com/downloads/)** na sua máquina;
+2. Importe os arquivos da coleção e do ambiente localizados no diretório `/testes` do repositório;
+3. Ative o ambiente no canto superior direito do Postman;
+4. Certifique-se de que a aplicação Spring Boot está em execução;
+5. Abra a coleção na barra lateral, selecione os cenários desejados e clique em **Send** para verificar os resultados.
+
+O projeto possui 10 cenários de teste planejados para validar o fluxo crítico da API, conforme o quadro a seguir. Registra-se que os testes de 01 a 09 podem ser realizados com o primeiro usuário cadastrado (ID 1). Todavia, para a realização do teste 10, deverá ser cadastrado um novo usuário e realizada a autenticação com ele, visto que o gateway de pagamento (mock) está programado para retornar false caso o ID do usuário seja um número par, ocasionando uma exceção de falha no pagamento.
+
+| ID   | Cenário                                  | Endpoint                                           | Pré-condição                                      | Entrada                                                | Esperado (status + resposta)                            | Nome na coleção                      |
+|------|-------------------------------------------|----------------------------------------------------|---------------------------------------------------|---------------------------------------------------------|----------------------------------------------------------|--------------------------------------|
+| T01  | Usuário cadastrado                        | POST /usuarios                                     | —                                                 | Body: dados do usuário                                  | 201 + Body: dados do usuário com ID e perfil             | T01 – Cadastrar usuário              |
+| T02  | Login válido                              | POST /auth/login                                   | Usuário cadastrado                                | Body: (cpf, senha)                                      | 200 + accessToken                                        | T02 – Login válido                   |
+| T03  | Listar produtos do cardápio da unidade    | GET /unidades/{unidadeId}/cardapio                 | —                                                 | Path: id da unidade                                     | 200 + lista de produtos                                  | T03 – Listar produtos do cardápio    |
+| TN04  | Pedido sem token válido                   | POST /pedidos                                      | —                                                 | Body: dados do pedido                                   | 401 + erro padrão                                        | TN04 – Pedido sem token válido        |
+| T05  | Pedido realizado                          | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido                                   | 201 + Body: dados do pedido com valor total              | T05 – Cadastrar pedido               |
+| TN06 | Produto inexistente                       | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido com id de produto inexistente     | 404 + erro personalizado                                 | TN06 – Produto inexistente           |
+| TN07 | Pedido sem informar canal de origem       | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido sem informar canal de origem      | 400 + erro padrão                                        | TN07 – Pedido sem canal de origem    |
+| T08  | Cancelar último pedido                    | PATCH /pedidos/{id}                                | Usuário autenticado e autorizado com token válido | Path: id do pedido                                      | 200 + Body: dados do pedido com status cancelado         | T08 – Cancelar pedido                |
+| T09  | Excluir endereço de usuário               | DELETE /usuarios/{usuarioId}/enderecos/{enderecoId}| Usuário autenticado e autorizado com token válido | Path: id do usuário e id do endereço                    | 204 + sem conteúdo                                       | T09 – Deletar endereço usuário       |
+| TN10 | Falha no pagamento                        | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido (usuarioId inválido)              | 422 + erro personalizado                                 | TN10 – Falha no pagamento            |
+
+
