@@ -40,8 +40,8 @@ git clone https://github.com/tarcisiordossantos/raizes-do-nordeste
 Para facilitar os testes, o projeto foi configurado para utilização do banco de dados em memória **H2**. Caso deseje utilizar e tenha o **MySQL** instalado no computador, deverá alterar a linha a seguir arquivo `src\main\resources\application.properties` de:
 `spring.profiles.active=h2`
 para: 
-`spring.profiles.active=mysql`
-
+`spring.profiles.active=mysql`. 
+Além disso, deve informar username e password no arquivo `src\main\resources\application-mysql.properties`
 
 ### 3. Para rodar a aplicação
 ```bash
@@ -117,8 +117,9 @@ O projeto possui 10 cenários de teste planejados para validar o fluxo crítico 
 | T05  | Pedido realizado                          | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido                                   | 201 + Body: dados do pedido com valor total              | T05 – Cadastrar pedido               |
 | TN06 | Produto inexistente                       | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido com id de produto inexistente     | 404 + erro personalizado                                 | TN06 – Produto inexistente           |
 | TN07 | Pedido sem informar canal de origem       | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido sem informar canal de origem      | 400 + erro padrão                                        | TN07 – Pedido sem canal de origem    |
-| T08  | Cancelar último pedido                    | PATCH /pedidos/{id}                                | Usuário autenticado e autorizado com token válido | Path: id do pedido                                      | 200 + Body: dados do pedido com status cancelado         | T08 – Cancelar pedido                |
-| T09  | Excluir endereço de usuário               | DELETE /usuarios/{usuarioId}/enderecos/{enderecoId}| Usuário autenticado e autorizado com token válido | Path: id do usuário e id do endereço                    | 204 + sem conteúdo                                       | T09 – Deletar endereço usuário       |
-| TN10 | Falha no pagamento                        | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido (usuarioId inválido)              | 422 + erro personalizado                                 | TN10 – Falha no pagamento            |
+| TN08 | Pedido com estoque insuficiente           | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido                                   | 422 + erro personalizado                                 | TN08 - Estoque insuficiente          |
+| T09  | Cancelar último pedido                    | PATCH /pedidos/{id}                                | Usuário autenticado e autorizado com token válido | Path: id do pedido                                      | 200 + Body: dados do pedido com status cancelado         | T09 – Cancelar pedido                |
+| T10  | Excluir endereço de usuário               | DELETE /usuarios/{usuarioId}/enderecos/{enderecoId}| Usuário autenticado e autorizado com token válido | Path: id do usuário e id do endereço                    | 204 + sem conteúdo                                       | T10 – Deletar endereço usuário       |
+| TN11 | Falha no pagamento                        | POST /pedidos                                      | Usuário autenticado e autorizado com token válido | Body: dados do pedido (usuarioId inválido)              | 422 + erro personalizado                                 | TN11 – Falha no pagamento            |
 
 
