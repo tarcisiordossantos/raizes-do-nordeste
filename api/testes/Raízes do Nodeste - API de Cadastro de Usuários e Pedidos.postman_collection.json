@@ -355,7 +355,7 @@
                       ]
                     },
                     {
-                      "name": "T09 - Deletar endereço usuário",
+                      "name": "T10 - Deletar endereço usuário",
                       "request": {
                         "auth": {
                           "type": "bearer",
@@ -2120,7 +2120,7 @@
           "name": "{id}",
           "item": [
             {
-              "name": "T08 - Cancelar pedido",
+              "name": "T09 - Cancelar pedido",
               "request": {
                 "auth": {
                   "type": "bearer",
@@ -4081,7 +4081,316 @@
           ]
         },
         {
-          "name": "TN10 - Falha no pagamento",
+          "name": "TN08 - Estoque insuficiente",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "*/*"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 1,\n      \"quantidade\": 12\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\"\n  },\n  \"unidadeId\": 2,\n  \"usuarioId\": 1,\n  \"usarFidelidade\": false\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pedidos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pedidos"
+              ]
+            },
+            "description": "O pedido pode ser realizado por GERENTE, ATENDENTE ou o próprio CLIENTE."
+          },
+          "response": [
+            {
+              "name": "Pedido Cadastrado",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "*/*"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 6642,\n      \"quantidade\": 9126\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\",\n    \"numeroCartao\": \"1234123412341234\",\n    \"vencimentoCartao\": \"2030-12\",\n    \"cvv\": \"000\"\n  },\n  \"unidadeId\": 1,\n  \"usuarioId\": 1,\n  \"formaEntrega\": \"\",\n  \"observacoes\": \"string\",\n  \"usarFidelidade\": false\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pedidos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "*/*"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": 3970,\n  \"dataPedido\": \"1977-10-09T03:27:08.223Z\",\n  \"statusPedido\": \"string\",\n  \"canalOrigem\": \"BALCAO\",\n  \"formaEntrega\": \"string\",\n  \"valorEntrega\": 2024.7605225334776,\n  \"prazoEstimado\": 3821,\n  \"desconto\": 5998.0238127165485,\n  \"valorTotal\": 8841.216077466966,\n  \"observacoes\": \"string\",\n  \"usuarioId\": 8079,\n  \"unidadeId\": 5887,\n  \"itensPedido\": [\n    {\n      \"id\": 305,\n      \"quantidade\": 7640,\n      \"subtotal\": 5359.078533267177,\n      \"statusProduto\": \"string\",\n      \"produto\": \"string\"\n    },\n    {\n      \"id\": 5070,\n      \"quantidade\": 5787,\n      \"subtotal\": 9624.042437161701,\n      \"statusProduto\": \"string\",\n      \"produto\": \"string\"\n    }\n  ],\n  \"pagamentos\": [\n    {\n      \"id\": 5316,\n      \"metodoPagamento\": \"string\",\n      \"statusPagamento\": \"string\",\n      \"valor\": 3134.3558916914717,\n      \"dataPagamento\": \"2016-03-23T21:16:59.320Z\"\n    },\n    {\n      \"id\": 5019,\n      \"metodoPagamento\": \"string\",\n      \"statusPagamento\": \"string\",\n      \"valor\": 9399.714193694748,\n      \"dataPagamento\": \"1969-08-24T08:14:39.733Z\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "Não preenchimento de campo obrigatório ou preenchimento incorreto",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 6642,\n      \"quantidade\": 9126\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\",\n    \"numeroCartao\": \"1234123412341234\",\n    \"vencimentoCartao\": \"2030-12\",\n    \"cvv\": \"000\"\n  },\n  \"unidadeId\": 1,\n  \"usuarioId\": 1,\n  \"formaEntrega\": \"\",\n  \"observacoes\": \"string\",\n  \"usarFidelidade\": false\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pedidos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Acesso não autorizado por não estar autenticado ou com token expirado/inválido",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 6642,\n      \"quantidade\": 9126\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\",\n    \"numeroCartao\": \"1234123412341234\",\n    \"vencimentoCartao\": \"2030-12\",\n    \"cvv\": \"000\"\n  },\n  \"unidadeId\": 1,\n  \"usuarioId\": 1,\n  \"formaEntrega\": \"\",\n  \"observacoes\": \"string\",\n  \"usarFidelidade\": false\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pedidos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Perfil do usuário não permite acesso a esta rota por estar tentando acessar/modificar informações de outro usuário e não ter perfil GERENTE (permissão total) ou ATENDENTE",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 6642,\n      \"quantidade\": 9126\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\",\n    \"numeroCartao\": \"1234123412341234\",\n    \"vencimentoCartao\": \"2030-12\",\n    \"cvv\": \"000\"\n  },\n  \"unidadeId\": 1,\n  \"usuarioId\": 1,\n  \"formaEntrega\": \"\",\n  \"observacoes\": \"string\",\n  \"usarFidelidade\": false\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pedidos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Recurso Não Encontrado",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 6642,\n      \"quantidade\": 9126\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\",\n    \"numeroCartao\": \"1234123412341234\",\n    \"vencimentoCartao\": \"2030-12\",\n    \"cvv\": \"000\"\n  },\n  \"unidadeId\": 1,\n  \"usuarioId\": 1,\n  \"formaEntrega\": \"\",\n  \"observacoes\": \"string\",\n  \"usarFidelidade\": false\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pedidos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": null
+            },
+            {
+              "name": "Falha no Processamento do Pagamento",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "description": "Added as a part of security scheme: bearer",
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"canalOrigem\": \"APP\",\n  \"itensPedido\": [\n    {\n      \"produtoId\": 6642,\n      \"quantidade\": 9126\n    }\n  ],\n  \"pagamento\": {\n    \"metodoPagamento\": \"PIX\",\n    \"numeroCartao\": \"1234123412341234\",\n    \"vencimentoCartao\": \"2030-12\",\n    \"cvv\": \"000\"\n  },\n  \"unidadeId\": 1,\n  \"usuarioId\": 1,\n  \"formaEntrega\": \"\",\n  \"observacoes\": \"string\",\n  \"usarFidelidade\": false\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/pedidos",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "pedidos"
+                  ]
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": null
+            }
+          ]
+        },
+        {
+          "name": "TN11 - Falha no pagamento",
           "request": {
             "auth": {
               "type": "bearer",

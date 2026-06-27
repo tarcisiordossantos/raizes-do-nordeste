@@ -1,0 +1,48 @@
+@startuml
+title Diagrama de Atividades - PedidoService.realizarPedido
+
+start
+
+:Receber PedidoRequestDTO;
+
+:Buscar Unidade e Usuário no banco de dados;
+
+:Verificar disponibilidade dos produtos no Cardápio ativo;
+
+:Verificar disponibilidade de insumos nos Estoques;
+
+if (Há disponibilidade no Cardápio e nos Estoques?) then (Sim)
+
+    : Calcular desconto por fidelidade;
+
+    : Calcular valor total do Pedido;
+
+    : Validar Pagamento no Gateway (mock);
+
+    if (Pagamento confirmado?) then (Sim)
+
+        : Alterar status para PAGAMENTO_CONFIRMADO;
+
+        : Acumular pontos de fidelidade;
+
+        : Dar baixa nos Estoques da Unidade;
+
+        : Gravar pedido no banco de dados;
+
+        : Emitir log de auditoria;
+
+        : Retornar PedidoResponseDTO \n (Status 201 Created);
+        stop
+    
+    else (Não)
+        : Lançar exceção (Erro 422);
+        stop
+
+    endif
+
+else (Não)
+    : Lançar exceção (Erro 422);
+    stop
+endif
+
+@enduml
